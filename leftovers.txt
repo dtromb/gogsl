@@ -1,0 +1,521 @@
+Reminder list of functions and API items that have not been addressed yet.
+
+gsl_rng_rand
+gsl_rng_random_bsd
+gsl_rng_random_libc5
+gsl_rng_random_glibc2
+gsl_rng_random8_bsd
+gsl_rng_random32_bsd
+gsl_rng_random64_bsd
+gsl_rng_random128_bsd
+gsl_rng_random256_bsd
+gsl_rng_rand48
+gsl_rng_ranf
+gsl_rng_ranmar
+gsl_rng_r250
+gsl_rng_tt800
+gsl_rng_vax
+gsl_rng_transputer
+gsl_rng_randu
+gsl_rng_minstd
+gsl_rng_uni
+gsl_rng_uni32
+gsl_rng_slatec
+gsl_rng_zuf
+gsl_rng_knuthran2
+gsl_rng_knuthran2002
+gsl_rng_knuthran
+gsl_rng_borosh13
+gsl_rng_fishman18
+gsl_rng_fishman20
+gsl_rng_lecuyer21
+gsl_rng_waterman14
+gsl_rng_fishman2x
+gsl_rng_coveyou
+
+gsl_qrng_niederreiter_2
+gsl_qrng_sobol
+gsl_qrng_halton
+gsl_qrng_reversehalton
+
+	    GSL_INTEG_COSINE
+    GSL_INTEG_SINE
+
+ODE Stepper Types:
+gsl_odeiv2_step_rk2
+gsl_odeiv2_step_rk4
+gsl_odeiv2_step_rkf45
+gsl_odeiv2_step_rkck
+gsl_odeiv2_step_rk8pd
+gsl_odeiv2_step_rk1imp
+gsl_odeiv2_step_rk2imp
+gsl_odeiv2_step_rk4imp
+gsl_odeiv2_step_bsimp
+gsl_odeiv2_step_msadams
+gsl_odeiv2_step_msbdf
+
+	
+gsl_monte_vegas_params:
+double alpha
+size_t iterations
+int stage
+int mode
+int verbose
+FILE * ostream
+
+gsl_monte_miser_params:
+double estimate_frac
+size_t min_calls
+size_t min_calls_per_bisection
+double alpha
+double dither
+	
+Wavelet: gsl_wavelet_daubechies
+Wavelet: gsl_wavelet_daubechies_centered
+Wavelet: gsl_wavelet_haar
+Wavelet: gsl_wavelet_haar_centered
+Wavelet: gsl_wavelet_bspline
+Wavelet: gsl_wavelet_bspline_centered
+
+const gsl_rng_type ** gsl_rng_types_setup (void)
+double * gsl_vector_ptr (gsl_vector * v, size_t i)
+const double * gsl_vector_const_ptr (const gsl_vector * v, size_t i)
+
+size_t * gsl_permutation_data (const gsl_permutation * p)
+int gsl_permute (const size_t * p, double * data, size_t stride, size_t n)
+int gsl_permute_inverse (const size_t * p, double * data, size_t stride, size_t n)
+
+size_t * gsl_combination_data (const gsl_combination * c)
+size_t * gsl_multiset_data (const gsl_multiset * c)
+
+# PACKAGE{"github.com/dtomb/gogsl/ntuple", ["gsl/gsl_ntuple.h"],["gsl_ntuple"]}
+# GSL_REFTYPE{"gsl_ntuple"}
+gsl_ntuple * gsl_ntuple_create (char * filename, void * ntuple_data, size_t size)
+gsl_ntuple * gsl_ntuple_open (char * filename, void * ntuple_data, size_t size)
+int gsl_ntuple_write (gsl_ntuple * ntuple)
+int gsl_ntuple_bookdata (gsl_ntuple * ntuple)
+int gsl_ntuple_read (gsl_ntuple * ntuple)
+int gsl_ntuple_close (gsl_ntuple * ntuple)
+int gsl_ntuple_project (gsl_histogram * h, gsl_ntuple * ntuple, gsl_ntuple_value_fn * value_func, gsl_ntuple_select_fn * select_func)
+
+
+# SECTION{"Simulated Annealing"}
+# PACKAGE{"github.com/dtomb/gogsl/siman", ["gsl/gsl_siman.h"],["gsl_siman"]}
+void gsl_siman_solve (const gsl_rng * r, void * x0_p, gsl_siman_Efunc_t Ef, gsl_siman_step_t take_step, gsl_siman_metric_t distance, gsl_siman_print_t print_position, gsl_siman_copy_t copyfunc, gsl_siman_copy_construct_t copy_constructor, gsl_siman_destroy_t destructor, size_t element_size, gsl_siman_params_t params)
+
+Interpolation Type: 
+gsl_interp_linear
+gsl_interp_polynomial
+gsl_interp_cspline
+gsl_interp_cspline_periodic
+gsl_interp_akima
+gsl_interp_akima_periodic
+
+double * gsl_cheb_coeffs (const gsl_cheb_series * cs)
+
+
+Solver: gsl_root_fsolver_bisection
+Solver: gsl_root_fsolver_falsepos
+Solver: gsl_root_fsolver_brent
+Derivative Solver: gsl_root_fdfsolver_newton
+Derivative Solver: gsl_root_fdfsolver_secant
+Derivative Solver: gsl_root_fdfsolver_steffenson
+
+
+
+Minimizer: gsl_min_fminimizer_goldensection
+Minimizer: gsl_min_fminimizer_brent
+Minimizer: gsl_min_fminimizer_quad_golden
+
+
+Derivative Solver: gsl_multiroot_fdfsolver_hybridsj
+Derivative Solver: gsl_multiroot_fdfsolver_hybridj
+Derivative Solver: gsl_multiroot_fdfsolver_newton
+Derivative Solver: gsl_multiroot_fdfsolver_gnewton
+Solver: gsl_multiroot_fsolver_hybrids
+Solver: gsl_multiroot_fsolver_hybrid
+Solver: gsl_multiroot_fsolver_dnewton
+Solver: gsl_multiroot_fsolver_broyden
+
+
+
+Minimizer: gsl_multimin_fdfminimizer_conjugate_fr
+Minimizer: gsl_multimin_fdfminimizer_conjugate_pr
+Minimizer: gsl_multimin_fdfminimizer_vector_bfgs2
+Minimizer: gsl_multimin_fdfminimizer_vector_bfgs
+Minimizer: gsl_multimin_fdfminimizer_steepest_descent
+Minimizer: gsl_multimin_fminimizer_nmsimplex2
+Minimizer: gsl_multimin_fminimizer_nmsimplex
+Minimizer: gsl_multimin_fminimizer_nmsimplex2rand
+
+
+Robust type: gsl_multifit_robust_default
+Robust type: gsl_multifit_robust_bisquare
+Robust type: gsl_multifit_robust_cauchy
+Robust type: gsl_multifit_robust_fair
+Robust type: gsl_multifit_robust_huber
+Robust type: gsl_multifit_robust_ols
+Robust type: gsl_multifit_robust_welsch
+
+gsl_multifit_robust_stats gsl_multifit_robust_statistics (const gsl_multifit_robust_workspace * w)
+
+GSL_CONST_MKSA_SPEED_OF_LIGHT
+
+    The speed of light in vacuum, c.
+GSL_CONST_MKSA_VACUUM_PERMEABILITY
+
+    The permeability of free space, \mu_0. This constant is defined in the MKSA system only.
+GSL_CONST_MKSA_VACUUM_PERMITTIVITY
+
+    The permittivity of free space, \epsilon_0. This constant is defined in the MKSA system only.
+GSL_CONST_MKSA_PLANCKS_CONSTANT_H
+
+    Planck’s constant, h.
+GSL_CONST_MKSA_PLANCKS_CONSTANT_HBAR
+
+    Planck’s constant divided by 2\pi, \hbar.
+GSL_CONST_NUM_AVOGADRO
+
+    Avogadro’s number, N_a.
+GSL_CONST_MKSA_FARADAY
+
+    The molar charge of 1 Faraday.
+GSL_CONST_MKSA_BOLTZMANN
+
+    The Boltzmann constant, k.
+GSL_CONST_MKSA_MOLAR_GAS
+
+    The molar gas constant, R_0.
+GSL_CONST_MKSA_STANDARD_GAS_VOLUME
+
+    The standard gas volume, V_0.
+GSL_CONST_MKSA_STEFAN_BOLTZMANN_CONSTANT
+
+    The Stefan-Boltzmann radiation constant, \sigma.
+GSL_CONST_MKSA_GAUSS
+GSL_CONST_MKSA_ASTRONOMICAL_UNIT
+
+    The length of 1 astronomical unit (mean earth-sun distance), au.
+GSL_CONST_MKSA_GRAVITATIONAL_CONSTANT
+
+    The gravitational constant, G.
+GSL_CONST_MKSA_LIGHT_YEAR
+
+    The distance of 1 light-year, ly.
+GSL_CONST_MKSA_PARSEC
+
+    The distance of 1 parsec, pc.
+GSL_CONST_MKSA_GRAV_ACCEL
+
+    The standard gravitational acceleration on Earth, g.
+GSL_CONST_MKSA_SOLAR_MASS
+GSL_CONST_MKSA_ELECTRON_CHARGE
+
+    The charge of the electron, e.
+GSL_CONST_MKSA_ELECTRON_VOLT
+
+    The energy of 1 electron volt, eV.
+GSL_CONST_MKSA_UNIFIED_ATOMIC_MASS
+
+    The unified atomic mass, amu.
+GSL_CONST_MKSA_MASS_ELECTRON
+
+    The mass of the electron, m_e.
+GSL_CONST_MKSA_MASS_MUON
+
+    The mass of the muon, m_\mu.
+GSL_CONST_MKSA_MASS_PROTON
+
+    The mass of the proton, m_p.
+GSL_CONST_MKSA_MASS_NEUTRON
+
+    The mass of the neutron, m_n.
+GSL_CONST_NUM_FINE_STRUCTURE
+
+    The electromagnetic fine structure constant \alpha.
+GSL_CONST_MKSA_RYDBERG
+
+    The Rydberg constant, Ry, in units of energy. This is related to the Rydberg inverse wavelength R_\infty by Ry = h c R_\infty.
+GSL_CONST_MKSA_BOHR_RADIUS
+
+    The Bohr radius, a_0.
+GSL_CONST_MKSA_ANGSTROM
+
+    The length of 1 angstrom.
+GSL_CONST_MKSA_BARN
+
+    The area of 1 barn.
+GSL_CONST_MKSA_BOHR_MAGNETON
+
+    The Bohr Magneton, \mu_B.
+GSL_CONST_MKSA_NUCLEAR_MAGNETON
+
+    The Nuclear Magneton, \mu_N.
+GSL_CONST_MKSA_ELECTRON_MAGNETIC_MOMENT
+
+    The absolute value of the magnetic moment of the electron, \mu_e. The physical magnetic moment of the electron is negative.
+GSL_CONST_MKSA_PROTON_MAGNETIC_MOMENT
+
+    The magnetic moment of the proton, \mu_p.
+GSL_CONST_MKSA_THOMSON_CROSS_SECTION
+
+    The Thomson cross section, \sigma_T.
+GSL_CONST_MKSA_DEBYE
+GSL_CONST_MKSA_MINUTE
+
+    The number of seconds in 1 minute.
+GSL_CONST_MKSA_HOUR
+
+    The number of seconds in 1 hour.
+GSL_CONST_MKSA_DAY
+
+    The number of seconds in 1 day.
+GSL_CONST_MKSA_WEEK
+
+
+GSL_CONST_MKSA_INCH
+
+    The length of 1 inch.
+GSL_CONST_MKSA_FOOT
+
+    The length of 1 foot.
+GSL_CONST_MKSA_YARD
+
+    The length of 1 yard.
+GSL_CONST_MKSA_MILE
+
+    The length of 1 mile.
+GSL_CONST_MKSA_MIL
+GSL_CONST_MKSA_KILOMETERS_PER_HOUR
+
+    The speed of 1 kilometer per hour.
+GSL_CONST_MKSA_MILES_PER_HOUR
+
+    The speed of 1 mile per hour.
+GSL_CONST_MKSA_NAUTICAL_MILE
+
+    The length of 1 nautical mile.
+GSL_CONST_MKSA_FATHOM
+
+    The length of 1 fathom.
+GSL_CONST_MKSA_KNOT
+
+
+GSL_CONST_MKSA_POINT
+
+    The length of 1 printer’s point (1/72 inch).
+GSL_CONST_MKSA_TEXPOINT
+
+
+GSL_CONST_MKSA_MICRON
+
+    The length of 1 micron.
+GSL_CONST_MKSA_HECTARE
+
+    The area of 1 hectare.
+GSL_CONST_MKSA_ACRE
+
+    The area of 1 acre.
+GSL_CONST_MKSA_LITER
+
+    The volume of 1 liter.
+GSL_CONST_MKSA_US_GALLON
+
+    The volume of 1 US gallon.
+GSL_CONST_MKSA_CANADIAN_GALLON
+
+    The volume of 1 Canadian gallon.
+GSL_CONST_MKSA_UK_GALLON
+
+    The volume of 1 UK gallon.
+GSL_CONST_MKSA_QUART
+
+    The volume of 1 quart.
+GSL_CONST_MKSA_PINT
+
+
+
+GSL_CONST_MKSA_POUND_MASS
+
+    The mass of 1 pound.
+GSL_CONST_MKSA_OUNCE_MASS
+
+    The mass of 1 ounce.
+GSL_CONST_MKSA_TON
+
+    The mass of 1 ton.
+GSL_CONST_MKSA_METRIC_TON
+
+    The mass of 1 metric ton (1000 kg).
+GSL_CONST_MKSA_UK_TON
+
+    The mass of 1 UK ton.
+GSL_CONST_MKSA_TROY_OUNCE
+
+    The mass of 1 troy ounce.
+GSL_CONST_MKSA_CARAT
+
+    The mass of 1 carat.
+GSL_CONST_MKSA_GRAM_FORCE
+
+    The force of 1 gram weight.
+GSL_CONST_MKSA_POUND_FORCE
+
+    The force of 1 pound weight.
+GSL_CONST_MKSA_KILOPOUND_FORCE
+
+    The force of 1 kilopound weight.
+GSL_CONST_MKSA_POUNDAL
+
+GSL_CONST_MKSA_CALORIE
+
+    The energy of 1 calorie.
+GSL_CONST_MKSA_BTU
+
+    The energy of 1 British Thermal Unit, btu.
+GSL_CONST_MKSA_THERM
+
+    The energy of 1 Therm.
+GSL_CONST_MKSA_HORSEPOWER
+
+    The power of 1 horsepower. 
+
+GSL_CONST_MKSA_BAR
+
+    The pressure of 1 bar.
+GSL_CONST_MKSA_STD_ATMOSPHERE
+
+    The pressure of 1 standard atmosphere.
+GSL_CONST_MKSA_TORR
+
+    The pressure of 1 torr.
+GSL_CONST_MKSA_METER_OF_MERCURY
+
+    The pressure of 1 meter of mercury.
+GSL_CONST_MKSA_INCH_OF_MERCURY
+
+    The pressure of 1 inch of mercury.
+GSL_CONST_MKSA_INCH_OF_WATER
+
+    The pressure of 1 inch of water.
+GSL_CONST_MKSA_PSI
+
+    The pressure of 1 pound per square inch. 
+
+
+GSL_CONST_MKSA_POISE
+
+    The dynamic viscosity of 1 poise.
+GSL_CONST_MKSA_STOKES
+
+    The kinematic viscosity of 1 stokes. 
+
+
+GSL_CONST_MKSA_STILB
+
+    The luminance of 1 stilb.
+GSL_CONST_MKSA_LUMEN
+
+    The luminous flux of 1 lumen.
+GSL_CONST_MKSA_LUX
+
+    The illuminance of 1 lux.
+GSL_CONST_MKSA_PHOT
+
+    The illuminance of 1 phot.
+GSL_CONST_MKSA_FOOTCANDLE
+
+    The illuminance of 1 footcandle.
+GSL_CONST_MKSA_LAMBERT
+
+    The luminance of 1 lambert.
+GSL_CONST_MKSA_FOOTLAMBERT
+
+    The luminance of 1 footlambert. 
+
+
+GSL_CONST_MKSA_CURIE
+
+    The activity of 1 curie.
+GSL_CONST_MKSA_ROENTGEN
+
+    The exposure of 1 roentgen.
+GSL_CONST_MKSA_RAD
+
+    The absorbed dose of 1 rad. 
+
+
+GSL_CONST_MKSA_NEWTON
+
+    The SI unit of force, 1 Newton.
+GSL_CONST_MKSA_DYNE
+
+    The force of 1 Dyne = 10^-5 Newton.
+GSL_CONST_MKSA_JOULE
+
+    The SI unit of energy, 1 Joule.
+GSL_CONST_MKSA_ERG
+
+    The energy 1 erg = 10^-7 Joule. 
+
+
+GSL_CONST_NUM_YOTTA
+
+    10^24
+GSL_CONST_NUM_ZETTA
+
+    10^21
+GSL_CONST_NUM_EXA
+
+    10^18
+GSL_CONST_NUM_PETA
+
+    10^15
+GSL_CONST_NUM_TERA
+
+    10^12
+GSL_CONST_NUM_GIGA
+
+    10^9
+GSL_CONST_NUM_MEGA
+
+    10^6
+GSL_CONST_NUM_KILO
+
+    10^3
+GSL_CONST_NUM_MILLI
+
+    10^-3
+GSL_CONST_NUM_MICRO
+
+    10^-6
+GSL_CONST_NUM_NANO
+
+    10^-9
+GSL_CONST_NUM_PICO
+
+    10^-12
+GSL_CONST_NUM_FEMTO
+
+    10^-15
+GSL_CONST_NUM_ATTO
+
+    10^-18
+GSL_CONST_NUM_ZEPTO
+
+    10^-21
+GSL_CONST_NUM_YOCTO
+
+    10^-24 
+
+
+
+Derivative Solver: gsl_multifit_fdfsolver_lmsder
+Derivative Solver: gsl_multifit_fdfsolver_lmder
+
+
+
+
+
+
+
