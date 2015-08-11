@@ -1478,7 +1478,7 @@ func main() {
 	var templatePosition int
 	
 	path, _ := osext.ExecutableFolder()
-	global_PACKAGE_BASE_PATH = path+"../../../"
+	global_PACKAGE_BASE_PATH = path+"../../../../"
 	flistBytes, err := ioutil.ReadFile(path+"/../function-list")
 	flist := string(flistBytes)
 	if err != nil {

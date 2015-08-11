@@ -3,7 +3,7 @@
 
 // Basic mathematical functions.
 # SECTION{"Mathematical Functions"}
-# PACKAGE{"github.com/dtomb/gogsl",["gsl/gsl_math.h"],["GSL_","gsl_"]}
+# PACKAGE{"github.com/dtromb/gogsl",["gsl/gsl_math.h"],["GSL_","gsl_"]}
 int gsl_isnan (const double x)
 int gsl_isinf (const double x)
 int gsl_finite (const double x)
@@ -31,7 +31,7 @@ int gsl_fcmp (double x, double y, double epsilon)
 
 // Complex number support.  This package is special-cased in the generator.
 # SECTION{"Complex Numbers"}
-# PACKAGE{"github.com/dtomb/gogsl/complex",["gsl/gsl_complex.h","gsl/gsl_complex_math.h"],["gsl_complex_"]}
+# PACKAGE{"github.com/dtromb/gogsl/complex",["gsl/gsl_complex.h","gsl/gsl_complex_math.h"],["gsl_complex_"]}
 # IMPORT{"unsafe"}
 gsl_complex gsl_complex_rect (double x, double y)
 gsl_complex gsl_complex_polar (double r, double theta)
@@ -95,7 +95,7 @@ gsl_complex gsl_complex_arccoth (gsl_complex z)
 
 // Polynomial manipulation, evaluation, and root finding.
 # SECTION{"Polynomials"}
-# PACKAGE{"github.com/dtomb/gogsl/poly", ["gsl/gsl_poly.h"], ["gsl_poly","gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/poly", ["gsl/gsl_poly.h"], ["gsl_poly","gsl"]}
 # GSL_REFTYPE{"gsl_poly_complex_workspace",[]}
 double gsl_poly_eval (const double c[], const int len, const double x)
 gsl_complex gsl_poly_complex_eval (const double c[], const int len, const gsl_complex z)
@@ -120,13 +120,13 @@ int gsl_poly_complex_solve (const double * a, size_t n, gsl_poly_complex_workspa
 // The top-level special functions library package.  All of the hundreds of special functions 
 // in GSL are contained in subpackages of sf.
 # SECTION{"Special Functions"}
-# PACKAGE{"github.com/dtomb/gogsl/sf", ["gsl/gsl_sf_result.h","gsl/gsl_sf_elementary.h"], ["GSL_","gsl_sf_"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf", ["gsl/gsl_sf_result.h","gsl/gsl_sf_elementary.h"], ["GSL_","gsl_sf_"]}
 # GSL_REFTYPE{"gsl_sf_result",["CData []byte"]}
 # GSL_REFTYPE{"gsl_sf_result_e10",["CData []byte"]}
 # GSL_ENUM{"gsl_mode_t"}
 int gsl_sf_multiply_e (double x, double y, gsl_sf_result * result)
 int gsl_sf_multiply_err_e (double x, double dx, double y, double dy, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/airy", ["gsl/gsl_sf_result.h","gsl/gsl_sf_airy.h"], ["gsl_sf_airy_"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/airy", ["gsl/gsl_sf_result.h","gsl/gsl_sf_airy.h"], ["gsl_sf_airy_"]}
 double gsl_sf_airy_Ai (double x, gsl_mode_t mode)
 int gsl_sf_airy_Ai_e (double x, gsl_mode_t mode, gsl_sf_result * result)
 double gsl_sf_airy_Bi (double x, gsl_mode_t mode)
@@ -150,7 +150,7 @@ double gsl_sf_airy_zero_Ai_deriv (unsigned int s)
 int gsl_sf_airy_zero_Ai_deriv_e (unsigned int s, gsl_sf_result * result)
 double gsl_sf_airy_zero_Bi_deriv (unsigned int s)
 int gsl_sf_airy_zero_Bi_deriv_e (unsigned int s, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/bessel/cylindrical", ["gsl/gsl_sf_result.h","gsl/gsl_sf_bessel.h"], ["gsl_sf_bessel"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/bessel/cylindrical", ["gsl/gsl_sf_result.h","gsl/gsl_sf_bessel.h"], ["gsl_sf_bessel"]}
 double gsl_sf_bessel_J0 (double x)
 int gsl_sf_bessel_J0_e (double x, gsl_sf_result * result)
 double gsl_sf_bessel_J1 (double x)
@@ -193,7 +193,7 @@ int gsl_sf_bessel_K1_scaled_e (double x, gsl_sf_result * result)
 double gsl_sf_bessel_Kn_scaled (int n, double x)
 int gsl_sf_bessel_Kn_scaled_e (int n, double x, gsl_sf_result * result)
 int gsl_sf_bessel_Kn_scaled_array (int nmin, int nmax, double x, double result_array[])
-# PACKAGE{"github.com/dtomb/gogsl/sf/bessel/spherical", ["gsl/gsl_sf_result.h","gsl/gsl_sf_bessel.h"], ["gsl_sf_bessel"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/bessel/spherical", ["gsl/gsl_sf_result.h","gsl/gsl_sf_bessel.h"], ["gsl_sf_bessel"]}
 double gsl_sf_bessel_j0 (double x)
 int gsl_sf_bessel_j0_e (double x, gsl_sf_result * result)
 double gsl_sf_bessel_j1 (double x)
@@ -232,7 +232,7 @@ int gsl_sf_bessel_k2_scaled_e (double x, gsl_sf_result * result)
 double gsl_sf_bessel_kl_scaled (int l, double x)
 int gsl_sf_bessel_kl_scaled_e (int l, double x, gsl_sf_result * result)
 int gsl_sf_bessel_kl_scaled_array (int lmax, double x, double result_array[])
-# PACKAGE{"github.com/dtomb/gogsl/sf/bessel/fractional", ["gsl/gsl_sf_result.h","gsl/gsl_sf_bessel.h"], ["gsl_sf_bessel"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/bessel/fractional", ["gsl/gsl_sf_result.h","gsl/gsl_sf_bessel.h"], ["gsl_sf_bessel"]}
 double gsl_sf_bessel_Jnu (double nu, double x)
 int gsl_sf_bessel_Jnu_e (double nu, double x, gsl_sf_result * result)
 int gsl_sf_bessel_sequence_Jnu_e (double nu, gsl_mode_t mode, size_t size, double v[])
@@ -254,10 +254,10 @@ double gsl_sf_bessel_zero_J1 (unsigned int s)
 int gsl_sf_bessel_zero_J1_e (unsigned int s, gsl_sf_result * result)
 double gsl_sf_bessel_zero_Jnu (double nu, unsigned int s)
 int gsl_sf_bessel_zero_Jnu_e (double nu, unsigned int s, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/clausen", ["gsl/gsl_sf_result.h","gsl/gsl_sf_clausen.h"], ["gsl_sf_"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/clausen", ["gsl/gsl_sf_result.h","gsl/gsl_sf_clausen.h"], ["gsl_sf_"]}
 double gsl_sf_clausen (double x)
 int gsl_sf_clausen_e (double x, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/coulomb", ["gsl/gsl_sf_result.h","gsl/gsl_sf_coulomb.h"], ["gsl_sf_coulomb","gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/coulomb", ["gsl/gsl_sf_result.h","gsl/gsl_sf_coulomb.h"], ["gsl_sf_coulomb","gsl_sf"]}
 double gsl_sf_hydrogenicR_1 (double Z, double r)
 int gsl_sf_hydrogenicR_1_e (double Z, double r, gsl_sf_result * result)
 double gsl_sf_hydrogenicR (int n, int l, double Z, double r)
@@ -276,17 +276,17 @@ int gsl_sf_coulomb_wave_FGp_array (double L_min, int kmax, double eta, double x,
 int gsl_sf_coulomb_wave_sphF_array (double L_min, int kmax, double eta, double x, double fc_array[], double F_exponent[])
 int gsl_sf_coulomb_CL_e (double L, double eta, gsl_sf_result * result)
 int gsl_sf_coulomb_CL_array (double Lmin, int kmax, double eta, double cl[])
-# PACKAGE{"github.com/dtomb/gogsl/sf/coupling", ["gsl/gsl_sf_result.h","gsl/gsl_sf_coupling.h"], ["gsl_sf_coupling_"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/coupling", ["gsl/gsl_sf_result.h","gsl/gsl_sf_coupling.h"], ["gsl_sf_coupling_"]}
 double gsl_sf_coupling_3j (int two_ja, int two_jb, int two_jc, int two_ma, int two_mb, int two_mc)
 int gsl_sf_coupling_3j_e (int two_ja, int two_jb, int two_jc, int two_ma, int two_mb, int two_mc, gsl_sf_result * result)
 double gsl_sf_coupling_6j (int two_ja, int two_jb, int two_jc, int two_jd, int two_je, int two_jf)
 int gsl_sf_coupling_6j_e (int two_ja, int two_jb, int two_jc, int two_jd, int two_je, int two_jf, gsl_sf_result * result) 
 double gsl_sf_coupling_9j (int two_ja, int two_jb, int two_jc, int two_jd, int two_je, int two_jf, int two_jg, int two_jh, int two_ji)
 int gsl_sf_coupling_9j_e (int two_ja, int two_jb, int two_jc, int two_jd, int two_je, int two_jf, int two_jg, int two_jh, int two_ji, gsl_sf_result * result) 
-# PACKAGE{"github.com/dtomb/gogsl/sf/dawson", ["gsl/gsl_sf_result.h","gsl/gsl_sf_dawson.h"], ["gsl_sf_"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/dawson", ["gsl/gsl_sf_result.h","gsl/gsl_sf_dawson.h"], ["gsl_sf_"]}
 double gsl_sf_dawson (double x)
 int gsl_sf_dawson_e (double x, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/debye", ["gsl/gsl_sf_result.h","gsl/gsl_sf_debye.h"], ["gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/debye", ["gsl/gsl_sf_result.h","gsl/gsl_sf_debye.h"], ["gsl_sf"]}
 double gsl_sf_debye_1 (double x)
 int gsl_sf_debye_1_e (double x, gsl_sf_result * result)
 double gsl_sf_debye_2 (double x)
@@ -299,13 +299,13 @@ double gsl_sf_debye_5 (double x)
 int gsl_sf_debye_5_e (double x, gsl_sf_result * result)
 double gsl_sf_debye_6 (double x)
 int gsl_sf_debye_6_e (double x, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/dilog", ["gsl/gsl_sf_result.h","gsl/gsl_sf_dilog.h"], ["gsl_sf"]}
-# IMPORT{"github.com/dtomb/gogsl/sf"}
+# PACKAGE{"github.com/dtromb/gogsl/sf/dilog", ["gsl/gsl_sf_result.h","gsl/gsl_sf_dilog.h"], ["gsl_sf"]}
+# IMPORT{"github.com/dtromb/gogsl/sf"}
 double gsl_sf_dilog (double x)
 int gsl_sf_dilog_e (double x, gsl_sf_result * result)
 int gsl_sf_complex_dilog_e (double r, double theta, gsl_sf_result * result_re, gsl_sf_result * result_im)
-# PACKAGE{"github.com/dtomb/gogsl/sf/ellint", ["gsl/gsl_sf_result.h","gsl/gsl_sf_ellint.h"], ["gsl_sf_ellint"]}
-# IMPORT{"github.com/dtomb/gogsl/sf"}
+# PACKAGE{"github.com/dtromb/gogsl/sf/ellint", ["gsl/gsl_sf_result.h","gsl/gsl_sf_ellint.h"], ["gsl_sf_ellint"]}
+# IMPORT{"github.com/dtromb/gogsl/sf"}
 double gsl_sf_ellint_Kcomp (double k, gsl_mode_t mode)
 int gsl_sf_ellint_Kcomp_e (double k, gsl_mode_t mode, gsl_sf_result * result)
 double gsl_sf_ellint_Ecomp (double k, gsl_mode_t mode)
@@ -328,12 +328,12 @@ double gsl_sf_ellint_RF (double x, double y, double z, gsl_mode_t mode)
 int gsl_sf_ellint_RF_e (double x, double y, double z, gsl_mode_t mode, gsl_sf_result * result)
 double gsl_sf_ellint_RJ (double x, double y, double z, double p, gsl_mode_t mode)
 int gsl_sf_ellint_RJ_e (double x, double y, double z, double p, gsl_mode_t mode, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/elljac", ["gsl/gsl_sf_result.h","gsl/gsl_sf_elljac.h"], ["gsl_sf_elljac"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/elljac", ["gsl/gsl_sf_result.h","gsl/gsl_sf_elljac.h"], ["gsl_sf_elljac"]}
 # NEXTMAP{"3","SLICEPTR"}
 # NEXTMAP{"4","SLICEPTR"}
 # NEXTMAP{"5","SLICEPTR"}
 int gsl_sf_elljac_e (double u, double m, double * sn, double * cn, double * dn)
-# PACKAGE{"github.com/dtomb/gogsl/sf/erf", ["gsl/gsl_sf_result.h","gsl/gsl_sf_erf.h"], ["gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/erf", ["gsl/gsl_sf_result.h","gsl/gsl_sf_erf.h"], ["gsl_sf"]}
 double gsl_sf_erf (double x)
 int gsl_sf_erf_e (double x, gsl_sf_result * result)
 double gsl_sf_erfc (double x)
@@ -346,7 +346,7 @@ double gsl_sf_erf_Q (double x)
 int gsl_sf_erf_Q_e (double x, gsl_sf_result * result)
 double gsl_sf_hazard (double x)
 int gsl_sf_hazard_e (double x, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/exp", ["gsl/gsl_sf_result.h","gsl/gsl_sf_exp.h"], ["gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/exp", ["gsl/gsl_sf_result.h","gsl/gsl_sf_exp.h"], ["gsl_sf"]}
 double gsl_sf_exp (double x)
 int gsl_sf_exp_e (double x, gsl_sf_result * result)
 int gsl_sf_exp_e10_e (double x, gsl_sf_result_e10 * result)
@@ -365,7 +365,7 @@ int gsl_sf_exp_err_e (double x, double dx, gsl_sf_result * result)
 int gsl_sf_exp_err_e10_e (double x, double dx, gsl_sf_result_e10 * result)
 int gsl_sf_exp_mult_err_e (double x, double dx, double y, double dy, gsl_sf_result * result)
 int gsl_sf_exp_mult_err_e10_e (double x, double dx, double y, double dy, gsl_sf_result_e10 * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/expint", ["gsl/gsl_sf_result.h","gsl/gsl_sf_expint.h"], ["gsl_sf_expint","gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/expint", ["gsl/gsl_sf_result.h","gsl/gsl_sf_expint.h"], ["gsl_sf_expint","gsl_sf"]}
 double gsl_sf_expint_E1 (double x)
 int gsl_sf_expint_E1_e (double x, gsl_sf_result * result)
 double gsl_sf_expint_E2 (double x)
@@ -388,7 +388,7 @@ double gsl_sf_Ci (const double x)
 int gsl_sf_Ci_e (double x, gsl_sf_result * result)
 double gsl_sf_atanint (double x)
 int gsl_sf_atanint_e (double x, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/fermidirac", ["gsl/gsl_sf_result.h","gsl/gsl_sf_fermi_dirac.h"], ["gsl_sf_fermi_dirac"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/fermidirac", ["gsl/gsl_sf_result.h","gsl/gsl_sf_fermi_dirac.h"], ["gsl_sf_fermi_dirac"]}
 double gsl_sf_fermi_dirac_m1 (double x)
 int gsl_sf_fermi_dirac_m1_e (double x, gsl_sf_result * result)
 # NAME{"Zero"}
@@ -415,7 +415,7 @@ double gsl_sf_fermi_dirac_3half (double x)
 int gsl_sf_fermi_dirac_3half_e (double x, gsl_sf_result * result)
 double gsl_sf_fermi_dirac_inc_0 (double x, double b)
 int gsl_sf_fermi_dirac_inc_0_e (double x, double b, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/gamma", ["gsl/gsl_sf_result.h","gsl/gsl_sf_gamma.h"], ["gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/gamma", ["gsl/gsl_sf_result.h","gsl/gsl_sf_gamma.h"], ["gsl_sf"]}
 double gsl_sf_gamma (double x)
 int gsl_sf_gamma_e (double x, gsl_sf_result * result)
 double gsl_sf_lngamma (double x)
@@ -461,7 +461,7 @@ double gsl_sf_lnbeta (double a, double b)
 int gsl_sf_lnbeta_e (double a, double b, gsl_sf_result * result)
 double gsl_sf_beta_inc (double a, double b, double x)
 int gsl_sf_beta_inc_e (double a, double b, double x, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/gegenbauer", ["gsl/gsl_sf_result.h","gsl/gsl_sf_gegenbauer.h"], ["gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/gegenbauer", ["gsl/gsl_sf_result.h","gsl/gsl_sf_gegenbauer.h"], ["gsl_sf"]}
 double gsl_sf_gegenpoly_1 (double lambda, double x)
 double gsl_sf_gegenpoly_2 (double lambda, double x)
 double gsl_sf_gegenpoly_3 (double lambda, double x)
@@ -471,7 +471,7 @@ int gsl_sf_gegenpoly_3_e (double lambda, double x, gsl_sf_result * result)
 double gsl_sf_gegenpoly_n (int n, double lambda, double x)
 int gsl_sf_gegenpoly_n_e (int n, double lambda, double x, gsl_sf_result * result)
 int gsl_sf_gegenpoly_array (int nmax, double lambda, double x, double result_array[])
-# PACKAGE{"github.com/dtomb/gogsl/sf/hyperg", ["gsl/gsl_sf_result.h","gsl/gsl_sf_hyperg.h"], ["gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/hyperg", ["gsl/gsl_sf_result.h","gsl/gsl_sf_hyperg.h"], ["gsl_sf"]}
 double gsl_sf_hyperg_0F1 (double c, double x)
 int gsl_sf_hyperg_0F1_e (double c, double x, gsl_sf_result * result)
 double gsl_sf_hyperg_1F1_int (int m, int n, double x)
@@ -494,7 +494,7 @@ double gsl_sf_hyperg_2F1_conj_renorm (double aR, double aI, double c, double x)
 int gsl_sf_hyperg_2F1_conj_renorm_e (double aR, double aI, double c, double x, gsl_sf_result * result)
 double gsl_sf_hyperg_2F0 (double a, double b, double x)
 int gsl_sf_hyperg_2F0_e (double a, double b, double x, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/laguerre", ["gsl/gsl_sf_result.h","gsl/gsl_sf_laguerre.h"], ["gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/laguerre", ["gsl/gsl_sf_result.h","gsl/gsl_sf_laguerre.h"], ["gsl_sf"]}
 double gsl_sf_laguerre_1 (double a, double x)
 double gsl_sf_laguerre_2 (double a, double x)
 double gsl_sf_laguerre_3 (double a, double x)
@@ -503,12 +503,12 @@ int gsl_sf_laguerre_2_e (double a, double x, gsl_sf_result * result)
 int gsl_sf_laguerre_3_e (double a, double x, gsl_sf_result * result)
 double gsl_sf_laguerre_n (const int n, const double a, const double x)
 int gsl_sf_laguerre_n_e (int n, double a, double x, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/lambert", ["gsl/gsl_sf_result.h","gsl/gsl_sf_lambert.h"], ["gsl_sf_lambert"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/lambert", ["gsl/gsl_sf_result.h","gsl/gsl_sf_lambert.h"], ["gsl_sf_lambert"]}
 double gsl_sf_lambert_W0 (double x)
 int gsl_sf_lambert_W0_e (double x, gsl_sf_result * result)
 double gsl_sf_lambert_Wm1 (double x)
 int gsl_sf_lambert_Wm1_e (double x, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/legendre", ["gsl/gsl_sf_result.h","gsl/gsl_sf_legendre.h"], ["gsl_sf_legendre","gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/legendre", ["gsl/gsl_sf_result.h","gsl/gsl_sf_legendre.h"], ["gsl_sf_legendre","gsl_sf"]}
 double gsl_sf_legendre_P1 (double x)
 double gsl_sf_legendre_P2 (double x)
 double gsl_sf_legendre_P3 (double x)
@@ -553,7 +553,7 @@ int gsl_sf_legendre_H3d_1_e (double lambda, double eta, gsl_sf_result * result)
 double gsl_sf_legendre_H3d (int l, double lambda, double eta)
 int gsl_sf_legendre_H3d_e (int l, double lambda, double eta, gsl_sf_result * result)
 int gsl_sf_legendre_H3d_array (int lmax, double lambda, double eta, double result_array[])
-# PACKAGE{"github.com/dtomb/gogsl/sf/log", ["gsl/gsl_sf_result.h","gsl/gsl_sf_log.h"], ["gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/log", ["gsl/gsl_sf_result.h","gsl/gsl_sf_log.h"], ["gsl_sf"]}
 double gsl_sf_log (double x)
 int gsl_sf_log_e (double x, gsl_sf_result * result)
 double gsl_sf_log_abs (double x)
@@ -563,7 +563,7 @@ double gsl_sf_log_1plusx (double x)
 int gsl_sf_log_1plusx_e (double x, gsl_sf_result * result)
 double gsl_sf_log_1plusx_mx (double x)
 int gsl_sf_log_1plusx_mx_e (double x, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/mathieu", ["gsl/gsl_sf_result.h","gsl/gsl_sf_mathieu.h"], ["gsl_sf_mathieu"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/mathieu", ["gsl/gsl_sf_result.h","gsl/gsl_sf_mathieu.h"], ["gsl_sf_mathieu"]}
 # GSL_REFTYPE{"gsl_sf_mathieu_workspace",[]}
 # NAME{"MathieuWorkspaceAlloc"}
 gsl_sf_mathieu_workspace * gsl_sf_mathieu_alloc (size_t n, double qmax)
@@ -580,10 +580,10 @@ int gsl_sf_mathieu_Mc (int j, int n, double q, double x, gsl_sf_result * result)
 int gsl_sf_mathieu_Ms (int j, int n, double q, double x, gsl_sf_result * result)
 int gsl_sf_mathieu_Mc_array (int j, int nmin, int nmax, double q, double x, gsl_sf_mathieu_workspace * work, double result_array[])
 int gsl_sf_mathieu_Ms_array (int j, int nmin, int nmax, double q, double x, gsl_sf_mathieu_workspace * work, double result_array[])
-# PACKAGE{"github.com/dtomb/gogsl/sf/powint", ["gsl/gsl_sf_result.h","gsl/gsl_sf_pow_int.h"], ["gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/powint", ["gsl/gsl_sf_result.h","gsl/gsl_sf_pow_int.h"], ["gsl_sf"]}
 double gsl_sf_pow_int (double x, int n)
 int gsl_sf_pow_int_e (double x, int n, gsl_sf_result * result) 
-# PACKAGE{"github.com/dtomb/gogsl/sf/psi", ["gsl/gsl_sf_result.h","gsl/gsl_sf_psi.h"], ["gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/psi", ["gsl/gsl_sf_result.h","gsl/gsl_sf_psi.h"], ["gsl_sf"]}
 double gsl_sf_psi_int (int n)
 int gsl_sf_psi_int_e (int n, gsl_sf_result * result)
 double gsl_sf_psi (double x)
@@ -596,12 +596,12 @@ double gsl_sf_psi_1 (double x)
 int gsl_sf_psi_1_e (double x, gsl_sf_result * result)
 double gsl_sf_psi_n (int n, double x)
 int gsl_sf_psi_n_e (int n, double x, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/syncrhotron", ["gsl/gsl_sf_result.h","gsl/gsl_sf_synchrotron.h"], ["gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/syncrhotron", ["gsl/gsl_sf_result.h","gsl/gsl_sf_synchrotron.h"], ["gsl_sf"]}
 double gsl_sf_synchrotron_1 (double x)
 int gsl_sf_synchrotron_1_e (double x, gsl_sf_result * result)
 double gsl_sf_synchrotron_2 (double x)
 int gsl_sf_synchrotron_2_e (double x, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/transport", ["gsl/gsl_sf_result.h","gsl/gsl_sf_transport.h"], ["gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/transport", ["gsl/gsl_sf_result.h","gsl/gsl_sf_transport.h"], ["gsl_sf"]}
 double gsl_sf_transport_2 (double x)
 int gsl_sf_transport_2_e (double x, gsl_sf_result * result)
 double gsl_sf_transport_3 (double x)
@@ -610,7 +610,7 @@ double gsl_sf_transport_4 (double x)
 int gsl_sf_transport_4_e (double x, gsl_sf_result * result)
 double gsl_sf_transport_5 (double x)
 int gsl_sf_transport_5_e (double x, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/trig", ["gsl/gsl_sf_result.h","gsl/gsl_sf_trig.h"], ["gsl_sf_trig","gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/trig", ["gsl/gsl_sf_result.h","gsl/gsl_sf_trig.h"], ["gsl_sf_trig","gsl_sf"]}
 double gsl_sf_sin (double x)
 int gsl_sf_sin_e (double x, gsl_sf_result * result)
 double gsl_sf_cos (double x)
@@ -632,7 +632,7 @@ double gsl_sf_angle_restrict_symm (double theta)
 double gsl_sf_angle_restrict_pos (double theta)
 int gsl_sf_sin_err_e (double x, double dx, gsl_sf_result * result)
 int gsl_sf_cos_err_e (double x, double dx, gsl_sf_result * result)
-# PACKAGE{"github.com/dtomb/gogsl/sf/zeta", ["gsl/gsl_sf_result.h","gsl/gsl_sf_zeta.h"], ["gsl_sf"]}
+# PACKAGE{"github.com/dtromb/gogsl/sf/zeta", ["gsl/gsl_sf_result.h","gsl/gsl_sf_zeta.h"], ["gsl_sf"]}
 double gsl_sf_zeta_int (int n)
 int gsl_sf_zeta_int_e (int n, gsl_sf_result * result)
 double gsl_sf_zeta (double s)
@@ -653,7 +653,7 @@ int gsl_sf_eta_e (double s, gsl_sf_result * result)
 // functions with similar signatures that take the various vector and matrix types.
 // We support that here with a primitive templating feature.   
 # SECTION{"Vectors and Matricies"}
-# PACKAGE{"github.com/dtomb/gogsl/block",["gsl/gsl_block.h"],["gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/block",["gsl/gsl_block.h"],["gsl"]}
 
 // Block support - basic arrays of raw C types with a unified interface.
 # GSL_REFTYPE{"gsl_block",[]}
@@ -682,7 +682,7 @@ int gsl_block_$_fscanf (FILE * stream, gsl_block_$ * b)
 # GSL_PREFIX_TEMPLATE_END{}
 
 // Vector support.
-# PACKAGE{"github.com/dtomb/gogsl/vector", ["gsl/gsl_vector.h","unistd.h"], ["gsl_vector"]}
+# PACKAGE{"github.com/dtromb/gogsl/vector", ["gsl/gsl_vector.h","unistd.h"], ["gsl_vector"]}
 # GSL_REFTYPE{"gsl_vector",[]}
 # GSL_REFTYPE{"gsl_vector_view",["CData []byte"]}
 # GSL_REFTYPE{"gsl_vector_const_view",["CData []byte"]}
@@ -837,7 +837,7 @@ gsl_vector_complex_view gsl_vector_complex_view_array_with_stride (double * base
 gsl_vector_complex_const_view gsl_vector_complex_const_view_array_with_stride (const double * base, size_t stride, size_t n)
 
 // Matrix support.
-# PACKAGE{"github.com/dtomb/gogsl/matrix", ["gsl/gsl_matrix.h","unistd.h"], ["gsl_matrix"]}
+# PACKAGE{"github.com/dtromb/gogsl/matrix", ["gsl/gsl_matrix.h","unistd.h"], ["gsl_matrix"]}
 # GSL_REFTYPE{"gsl_matrix",[]}
 # GSL_REFTYPE{"gsl_matrix_view",["CData []byte"]}
 # GSL_REFTYPE{"gsl_matrix_const_view",["CData []byte"]}
@@ -1020,7 +1020,7 @@ int gsl_matrix_complex_float_add_constant (gsl_matrix_complex_float * a, const g
 
 // Enumerated permuations.
 # SECTION{"Permutations"}
-# PACKAGE{"github.com/dtomb/gogsl/permutation",["gsl/gsl_permutation.h","gsl/gsl_permute_vector.h","unistd.h"],["gsl_permutation","gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/permutation",["gsl/gsl_permutation.h","gsl/gsl_permute_vector.h","unistd.h"],["gsl_permutation","gsl"]}
 # GSL_REFTYPE{"gsl_permutation",[]}
 # NAME{"PermutationAlloc"}
 gsl_permutation * gsl_permutation_alloc (size_t n)
@@ -1055,7 +1055,7 @@ size_t gsl_permutation_canonical_cycles (const gsl_permutation * q)
 
 // Enumerated combinations.
 # SECTION{"Combinations"}
-# PACKAGE{"github.com/dtomb/gogsl/combination", ["gsl/gsl_combination.h","unistd.h"],["gsl_combination","gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/combination", ["gsl/gsl_combination.h","unistd.h"],["gsl_combination","gsl"]}
 #GSL_REFTYPE{"gsl_combination",[]}
 # NAME{"CombinationAlloc"}
 gsl_combination * gsl_combination_alloc (size_t n, size_t k)
@@ -1079,7 +1079,7 @@ int gsl_combination_fscanf (FILE * stream, gsl_combination * c)
 
 // Enumerated multiset presentations.
 # SECTION{"Multisets"}
-# PACKAGE{"github.com/dtomb/gogsl/multiset", ["gsl/gsl_multiset.h","unistd.h"],["gsl_multiset"]}
+# PACKAGE{"github.com/dtromb/gogsl/multiset", ["gsl/gsl_multiset.h","unistd.h"],["gsl_multiset"]}
 # GSL_REFTYPE{"gsl_multiset",[]}
 # NAME{"MultisetAlloc"}
 gsl_multiset * gsl_multiset_alloc (size_t n, size_t k)
@@ -1103,7 +1103,7 @@ int gsl_multiset_fscanf (FILE * stream, gsl_multiset * c)
 
 // Sorting methods.
 # SECTION{"Sorting"}
-# PACKAGE{"github.com/dtomb/gogsl/sort", ["gsl/gsl_complex.h","gsl/gsl_heapsort.h","gsl/gsl_sort.h","gsl/gsl_sort_vector.h"],["gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/sort", ["gsl/gsl_complex.h","gsl/gsl_heapsort.h","gsl/gsl_sort.h","gsl/gsl_sort_vector.h"],["gsl"]}
 // The GSL qsort() replacement functions are implemented manually in \
 // heapsort_support.go, so they do not appear here.
 //
@@ -1177,7 +1177,7 @@ int gsl_sort_vector_$_largest_index (size_t * p, size_t k, const gsl_vector_$ * 
 
 // BLAS linear algebra library support.
 # SECTION{"BLAS"}
-# PACKAGE{"github.com/dtomb/gogsl/blas", ["gsl/gsl_blas.h","unistd.h"],["gsl_blas"]}
+# PACKAGE{"github.com/dtromb/gogsl/blas", ["gsl/gsl_blas.h","unistd.h"],["gsl_blas"]}
 # TYPEMAP{"CBLAS_INDEX_t","Index","C.size_t"}
 # TYPEMAP{"CBLAS_TRANSPOSE_t","Transpose","C.CBLAS_TRANSPOSE_t"}
 # TYPEMAP{"CBLAS_ORDER_t","Order","C.CBLAS_ORDER_t"}
@@ -1300,7 +1300,7 @@ int gsl_blas_cher2k (CBLAS_UPLO_t Uplo, CBLAS_TRANSPOSE_t Trans, const gsl_compl
 int gsl_blas_zher2k (CBLAS_UPLO_t Uplo, CBLAS_TRANSPOSE_t Trans, const gsl_complex alpha, const gsl_matrix_complex * A, const gsl_matrix_complex * B, double beta, gsl_matrix_complex * C)
 
 # SECTION{"Linear Algebra"}
-# PACKAGE{"github.com/dtomb/gogsl/linalg", ["gsl/gsl_linalg.h"],["gsl_linalg"]}
+# PACKAGE{"github.com/dtromb/gogsl/linalg", ["gsl/gsl_linalg.h"],["gsl_linalg"]}
 # NEXTMAP{"3","OUTPTR"}
 int gsl_linalg_LU_decomp (gsl_matrix * A, gsl_permutation * p, int * signum)
 # NEXTMAP{"3","OUTPTR"}
@@ -1388,7 +1388,7 @@ int gsl_linalg_solve_symm_cyc_tridiag (const gsl_vector * diag, const gsl_vector
 int gsl_linalg_balance_matrix (gsl_matrix * A, gsl_vector * D)
 
 # SECTION{"Eigensystems"}
-# PACKAGE{"github.com/dtomb/gogsl/eigen", ["gsl/gsl_eigen.h"],["gsl_eigen"]}
+# PACKAGE{"github.com/dtromb/gogsl/eigen", ["gsl/gsl_eigen.h"],["gsl_eigen"]}
 # TYPEMAP{"gsl_eigen_sort_t","Sort","C.gsl_eigen_sort_t"}
 # GSL_REFTYPE{"gsl_eigen_symm_workspace",[""]}
 # GSL_REFTYPE{"gsl_eigen_symmv_workspace",[""]}
@@ -1454,7 +1454,7 @@ int gsl_eigen_genv_sort (gsl_vector_complex * alpha, gsl_vector * beta, gsl_matr
 
 
 # SECTION{"Fast Fourier Transforms"}
-# PACKAGE{"github.com/dtomb/gogsl/fft", ["gsl/gsl_fft.h","gsl/gsl_fft_complex.h","gsl/gsl_fft_real.h","gsl/gsl_fft_halfcomplex.h"],["gsl_fft"]}
+# PACKAGE{"github.com/dtromb/gogsl/fft", ["gsl/gsl_fft.h","gsl/gsl_fft_complex.h","gsl/gsl_fft_real.h","gsl/gsl_fft_halfcomplex.h"],["gsl_fft"]}
 # TYPEMAP{"gsl_fft_direction", "Direction", "C.gsl_fft_direction"}
 # GSL_REFTYPE{"gsl_fft_complex_wavetable",[""]}
 # GSL_REFTYPE{"gsl_fft_complex_workspace",[""]}
@@ -1493,7 +1493,7 @@ int gsl_fft_real_unpack (const double real_coefficient[], gsl_complex_packed_arr
 int gsl_fft_halfcomplex_unpack (const double halfcomplex_coefficient[], gsl_complex_packed_array complex_coefficient, size_t stride, size_t n)
 
 # SECTION{"Numerical Integration"}
-# PACKAGE{"github.com/dtomb/gogsl/numint", ["gsl/gsl_integration.h"],["gsl_integration","gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/numint", ["gsl/gsl_integration.h"],["gsl_integration","gsl"]}
 # TYPEMAP{"gsl_integration_qawo_enum","GslIntegrationQawoEnum","C.enum_gsl_integration_qawo_enum"}
 # GSL_REFTYPE{"gsl_integration_workspace",[]}
 # GSL_REFTYPE{"gsl_integration_qaws_table",[]}
@@ -1558,7 +1558,7 @@ int gsl_integration_glfixed_point (double a, double b, size_t i, double * xi, do
 void gsl_integration_glfixed_table_free (gsl_integration_glfixed_table * t)
 
 # SECTION{"Random Number Generation"}
-# PACKAGE{"github.com/dtomb/gogsl/rng", ["gsl/gsl_rng.h"],["gsl_rng","gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/rng", ["gsl/gsl_rng.h"],["gsl_rng","gsl"]}
 # GSL_REFTYPE{"gsl_rng",[]}
 # GSL_REFTYPE{"gsl_rng_type",["cPtr uintptr"]}
 # NAME{"RngAlloc"}
@@ -1586,7 +1586,7 @@ int gsl_rng_fwrite (FILE * stream, const gsl_rng * r)
 int gsl_rng_fread (FILE * stream, gsl_rng * r)
 
 # SECTION{"Quasi-Random Sequences"}
-# PACKAGE{"github.com/dtomb/gogsl/qrng", ["gsl/gsl_qrng.h"],["gsl_qrng"]}
+# PACKAGE{"github.com/dtromb/gogsl/qrng", ["gsl/gsl_qrng.h"],["gsl_qrng"]}
 # GSL_REFTYPE{"gsl_qrng",[]}
 # GSL_REFTYPE{"gsl_qrng_type",[]}
 # NAME{"QrngAlloc"}
@@ -1604,7 +1604,7 @@ int gsl_qrng_memcpy (gsl_qrng * dest, const gsl_qrng * src)
 gsl_qrng * gsl_qrng_clone (const gsl_qrng * q)
 
 # SECTION{"Random Number Distributions"}
-# PACKAGE{"github.com/dtomb/gogsl/randist", ["gsl/gsl_randist.h","gsl/gsl_cdf.h"],["gsl_ran","gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/randist", ["gsl/gsl_randist.h","gsl/gsl_cdf.h"],["gsl_ran","gsl"]}
 # GSL_REFTYPE{"gsl_ran_discrete_t",[]}
 double gsl_ran_gaussian (const gsl_rng * r, double sigma)
 double gsl_ran_gaussian_pdf (double x, double sigma)
@@ -1789,7 +1789,7 @@ unsigned int gsl_ran_logarithmic (const gsl_rng * r, double p)
 double gsl_ran_logarithmic_pdf (unsigned int k, double p)
 
 # SECTION{"Statistics"}
-# PACKAGE{"github.com/dtomb/gogsl/stats", ["gsl/gsl_statistics.h","gsl/gsl_complex.h"],["gsl_stats"]}
+# PACKAGE{"github.com/dtromb/gogsl/stats", ["gsl/gsl_statistics.h","gsl/gsl_complex.h"],["gsl_stats"]}
 double gsl_stats_mean (const double data[], size_t stride, size_t n)
 double gsl_stats_variance (const double data[], size_t stride, size_t n)
 double gsl_stats_variance_m (const double data[], size_t stride, size_t n, double mean)
@@ -1890,7 +1890,7 @@ double gsl_stats_$_quantile_from_sorted_data (const @ sorted_data[], size_t stri
 # GSL_PREFIX_TEMPLATE_END{}
 
 # SECTION{"Histograms"}
-# PACKAGE{"github.com/dtomb/gogsl/histogram", ["gsl/gsl_histogram.h","gsl/gsl_histogram2d.h"],["gsl_histogram","gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/histogram", ["gsl/gsl_histogram.h","gsl/gsl_histogram2d.h"],["gsl_histogram","gsl"]}
 # GSL_REFTYPE{"gsl_histogram",[]}
 # GSL_REFTYPE{"gsl_histogram_pdf",[]}
 # GSL_REFTYPE{"gsl_histogram2d",[]}
@@ -1998,7 +1998,7 @@ void gsl_histogram2d_pdf_free (gsl_histogram2d_pdf * p)
 int gsl_histogram2d_pdf_sample (const gsl_histogram2d_pdf * p, double r1, double r2, double * x, double * y)
 
 # SECTION{"Monte Carlo Integration"}
-# PACKAGE{"github.com/dtomb/gogsl/monte", ["gsl/gsl_monte_plain.h","gsl/gsl_monte_miser.h","gsl/gsl_monte_vegas.h"],["gsl_monte"]}
+# PACKAGE{"github.com/dtromb/gogsl/monte", ["gsl/gsl_monte_plain.h","gsl/gsl_monte_miser.h","gsl/gsl_monte_vegas.h"],["gsl_monte"]}
 # GSL_REFTYPE{"gsl_monte_plain_state",[]}
 # GSL_REFTYPE{"gsl_monte_miser_state",[]}
 # GSL_REFTYPE{"gsl_monte_miser_params",[]}
@@ -2032,7 +2032,7 @@ void gsl_monte_vegas_params_get (const gsl_monte_vegas_state * s, gsl_monte_vega
 void gsl_monte_vegas_params_set (gsl_monte_vegas_state * s, const gsl_monte_vegas_params * params)
 
 # SECTION{"Ordinary Differential Equations"}
-# PACKAGE{"github.com/dtomb/gogsl/ode", ["gsl/gsl_odeiv2.h"],["gsl_odeiv2"]}
+# PACKAGE{"github.com/dtromb/gogsl/ode", ["gsl/gsl_odeiv2.h"],["gsl_odeiv2"]}
 // XXX , TODO - These types very likely hold references to each other.  We need to track these
 // internal references to keep the C structure peers from being deallocated when the Go 
 // wrapper structs are deallocated, but a computation is still active!
@@ -2093,7 +2093,7 @@ void gsl_odeiv2_driver_free (gsl_odeiv2_driver* d)
 
 
 # SECTION{"Interpolation"}
-# PACKAGE{"github.com/dtomb/gogsl/interp", ["gsl/gsl_interp.h","gsl/gsl_spline.h"],["gsl_interp","gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/interp", ["gsl/gsl_interp.h","gsl/gsl_spline.h"],["gsl_interp","gsl"]}
 # GSL_REFTYPE{"gsl_interp",[]}
 # GSL_REFTYPE{"gsl_interp_type",[]}
 # GSL_REFTYPE{"gsl_interp_accel",[]}
@@ -2145,7 +2145,7 @@ int gsl_spline_eval_integ_e (const gsl_spline * spline, double a, double b, gsl_
 
 
 # SECTION{"Numerical Differentiation"}
-# PACKAGE{"github.com/dtomb/gogsl/deriv", ["gsl/gsl_deriv.h"],["gsl_deriv"]}
+# PACKAGE{"github.com/dtromb/gogsl/deriv", ["gsl/gsl_deriv.h"],["gsl_deriv"]}
 # NEXTMAP{"4","OUTPTR"}
 # NEXTMAP{"5","OUTPTR"}
 int gsl_deriv_central (const gsl_function * f, double x, double h, double * result, double * abserr)
@@ -2157,7 +2157,7 @@ int gsl_deriv_forward (const gsl_function * f, double x, double h, double * resu
 int gsl_deriv_backward (const gsl_function * f, double x, double h, double * result, double * abserr)
 
 # SECTION{"Chebyshev Approximations"}
-# PACKAGE{"github.com/dtomb/gogsl/chebyshev", ["stdlib.h","gsl/gsl_chebyshev.h"],["gsl_cheb"]}
+# PACKAGE{"github.com/dtromb/gogsl/chebyshev", ["stdlib.h","gsl/gsl_chebyshev.h"],["gsl_cheb"]}
 # GSL_REFTYPE{"gsl_cheb_series",[]}
 gsl_cheb_series * gsl_cheb_alloc (const size_t n)
 void gsl_cheb_free (gsl_cheb_series * cs)
@@ -2177,7 +2177,7 @@ int gsl_cheb_calc_integ (gsl_cheb_series * integ, const gsl_cheb_series * cs)
 
 
 # SECTION{"Series Acceleration"}
-# PACKAGE{"github.com/dtomb/gogsl/sum", ["gsl/gsl_sum.h"],["gsl_sum"]}
+# PACKAGE{"github.com/dtromb/gogsl/sum", ["gsl/gsl_sum.h"],["gsl_sum"]}
 # GSL_REFTYPE{"gsl_sum_levin_u_workspace",[]}
 # GSL_REFTYPE{"gsl_sum_levin_utrunc_workspace",[]}
 gsl_sum_levin_u_workspace * gsl_sum_levin_u_alloc (size_t n)
@@ -2194,7 +2194,7 @@ void gsl_sum_levin_utrunc_free (gsl_sum_levin_utrunc_workspace * w)
 int gsl_sum_levin_utrunc_accel (const double * array, size_t array_size, gsl_sum_levin_utrunc_workspace * w, double * sum_accel, double * abserr_trunc)
 
 # SECTION{"Wavelet Transforms"}
-# PACKAGE{"github.com/dtomb/gogsl/wavelet", ["gsl/gsl_wavelet.h","gsl/gsl_wavelet2d.h"],["gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/wavelet", ["gsl/gsl_wavelet.h","gsl/gsl_wavelet2d.h"],["gsl"]}
 # TYPEMAP{"gsl_wavelet_direction","GslWaveletDirection","C.gsl_wavelet_direction"}
 # GSL_REFTYPE{"gsl_wavelet",[]}
 # GSL_REFTYPE{"gsl_wavelet_type",[]}
@@ -2233,7 +2233,7 @@ int gsl_wavelet2d_nstransform_matrix_inverse (const gsl_wavelet * w, gsl_matrix 
 
 
 # SECTION{"Discrete Hankel Transforms"}
-# PACKAGE{"github.com/dtomb/gogsl/dht", ["gsl/gsl_dht.h"],["gsl_dht"]}
+# PACKAGE{"github.com/dtromb/gogsl/dht", ["gsl/gsl_dht.h"],["gsl_dht"]}
 # GSL_REFTYPE{"gsl_dht",[]}
 gsl_dht * gsl_dht_alloc (size_t size)
 int gsl_dht_init (gsl_dht * t, double nu, double xmax)
@@ -2246,7 +2246,7 @@ double gsl_dht_x_sample (const gsl_dht * t, int n)
 double gsl_dht_k_sample (const gsl_dht * t, int n)
 
 # SECTION{"One-dimensional Root Finding"}
-# PACKAGE{"github.com/dtomb/gogsl/root", ["gsl/gsl_roots.h"],["gsl_root"]}
+# PACKAGE{"github.com/dtromb/gogsl/root", ["gsl/gsl_roots.h"],["gsl_root"]}
 # GSL_REFTYPE{"gsl_root_fsolver",[]}
 # GSL_REFTYPE{"gsl_root_fsolver_type",[]}
 # GSL_REFTYPE{"gsl_root_fdfsolver",[]}
@@ -2274,7 +2274,7 @@ int gsl_root_test_delta (double x1, double x0, double epsabs, double epsrel)
 int gsl_root_test_residual (double f, double epsabs)
 
 # SECTION{"One-dimensional Minimization"}
-# PACKAGE{"github.com/dtomb/gogsl/min", ["gsl/gsl_min.h"],["gsl_min"]}
+# PACKAGE{"github.com/dtromb/gogsl/min", ["gsl/gsl_min.h"],["gsl_min"]}
 # GSL_REFTYPE{"gsl_min_fminimizer",[]}
 # GSL_REFTYPE{"gsl_min_fminimizer_type",[]}
 gsl_min_fminimizer * gsl_min_fminimizer_alloc (const gsl_min_fminimizer_type * T)
@@ -2294,7 +2294,7 @@ double gsl_min_fminimizer_f_lower (const gsl_min_fminimizer * s)
 int gsl_min_test_interval (double x_lower, double x_upper, double epsabs, double epsrel)
 
 # SECTION{"Multi-dimensional Root Finding"}
-# PACKAGE{"github.com/dtomb/gogsl/multiroot", ["gsl/gsl_multiroots.h","gsl/gsl_vector.h","gsl/gsl_matrix.h"],["gsl_multiroot"]}
+# PACKAGE{"github.com/dtromb/gogsl/multiroot", ["gsl/gsl_multiroots.h","gsl/gsl_vector.h","gsl/gsl_matrix.h"],["gsl_multiroot"]}
 # TYPEMAP{"gsl_multiroot_function*","*GslMultirootFunction","*C.gsl_multiroot_function","CPTR"}
 # TYPEMAP{"gsl_multiroot_function_fdf*","*GslMultirootFunctionFdf","*C.gsl_multiroot_function_fdf","CPTR"}
 # GSL_REFTYPE{"gsl_multiroot_fsolver",[]}
@@ -2325,7 +2325,7 @@ int gsl_multiroot_test_delta (const gsl_vector * dx, const gsl_vector * x, doubl
 int gsl_multiroot_test_residual (const gsl_vector * f, double epsabs)
 
 # SECTION{"Multi-dimensional Minimization"}
-# PACKAGE{"github.com/dtomb/gogsl/multimin", ["gsl/gsl_multimin.h"],["gsl_multimin"]}
+# PACKAGE{"github.com/dtromb/gogsl/multimin", ["gsl/gsl_multimin.h"],["gsl_multimin"]}
 # TYPEMAP{"gsl_multimin_function*","*GslMultiminFunction","*C.gsl_multimin_function","CPTR"}
 # TYPEMAP{"gsl_multimin_function_fdf*","*GslMultiminFunctionFdf","*C.gsl_multimin_function_fdf","CPTR"}
 # GSL_REFTYPE{"gsl_multimin_fminimizer",[]}
@@ -2357,7 +2357,7 @@ int gsl_multimin_test_gradient (const gsl_vector * g, double epsabs)
 int gsl_multimin_test_size (const double size, double epsabs)
 
 # SECTION{"Least-squares Fitting"}
-# PACKAGE{"github.com/dtomb/gogsl/fit", ["gsl/gsl_fit.h","gsl/gsl_multifit.h","gsl/gsl_vector.h","gsl/gsl_matrix.h"],["gsl_fit"]}
+# PACKAGE{"github.com/dtromb/gogsl/fit", ["gsl/gsl_fit.h","gsl/gsl_multifit.h","gsl/gsl_vector.h","gsl/gsl_matrix.h"],["gsl_fit"]}
 # GSL_REFTYPE{"gsl_multifit_linear_workspace",[]}
 # GSL_REFTYPE{"gsl_multifit_robust_workspace",[]}
 # GSL_REFTYPE{"gsl_multifit_robust_type",[]}
@@ -2433,7 +2433,7 @@ int gsl_multifit_robust (const gsl_matrix * X, const gsl_vector * y, gsl_vector 
 int gsl_multifit_robust_est (const gsl_vector * x, const gsl_vector * c, const gsl_matrix * cov, double * y, double * y_err)
 
 # SECTION{"Nonlinear Least-squares Fitting"}
-# PACKAGE{"github.com/dtomb/gogsl/multifit", ["gsl/gsl_multifit.h","gsl/gsl_multifit_nlin.h"],["gsl_multifit"]}
+# PACKAGE{"github.com/dtromb/gogsl/multifit", ["gsl/gsl_multifit.h","gsl/gsl_multifit_nlin.h"],["gsl_multifit"]}
 # TYPEMAP{"gsl_multifit_function*","*GslMultifitFunction","*C.gsl_multifit_function","CPTR"}
 # TYPEMAP{"gsl_multifit_function_fdf*","*GslMultifitFunctionFdf","*C.gsl_multifit_function_fdf","CPTR"}
 # GSL_REFTYPE{"gsl_multifit_fsolver",[]}
@@ -2466,7 +2466,7 @@ int gsl_multifit_fdfsolver_driver (gsl_multifit_fdfsolver * s, const size_t maxi
 int gsl_multifit_covar (const gsl_matrix * J, double epsrel, gsl_matrix * covar)
 
 # SECTION{"Basis Splines"}
-# PACKAGE{"github.com/dtomb/gogsl/bspline", ["gsl/gsl_bspline.h"],["gsl_bspline"]}
+# PACKAGE{"github.com/dtromb/gogsl/bspline", ["gsl/gsl_bspline.h"],["gsl_bspline"]}
 # GSL_REFTYPE{"gsl_bspline_workspace",[]}
 # GSL_REFTYPE{"gsl_bspline_deriv_workspace",[]}
 gsl_bspline_workspace * gsl_bspline_alloc (const size_t k, const size_t nbreak)

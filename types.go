@@ -61,6 +61,7 @@ package gogsl
 import "C"
 
 import (
+	//"fmt"
 	"errors"
 	"reflect"
 )
@@ -82,6 +83,8 @@ func init() {
 	// XXX - Check a type size signature hash against a generation-time value here,
 	// 		 to detect if regeneration is necessary, and issue warning if so.
 	var err error
+	//fmt.Printf("c size_T: %d\n", GetCSizeTSize())
+	//fmt.Printf("go uintptr: %d\n", GetUintptrSize())
 	if GOGSL_SIZE_T_TYPE, err = GetNumberType(false, GetCSizeTSize()); err != nil {
 		panic(err.Error())
 	}	
@@ -113,6 +116,16 @@ func init() {
 
 func GetIntSize() int {
 	var c, k uint
+	k = k - 1
+	for k > 0 {
+		c += 1
+		k >>= 1
+	}
+	return int(c)
+}
+
+func GetUintptrSize() int {
+	var c, k uintptr
 	k = k - 1
 	for k > 0 {
 		c += 1

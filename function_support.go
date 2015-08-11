@@ -6,6 +6,8 @@ package gogsl
 	#include <gsl/gsl_math.h>
 	#include <gsl/gsl_monte.h>
 	
+	extern double gslFunctionCaller(double, void*);
+
 	double _cgo_gsl_function_proxy(double x, void *params) {
 		return gslFunctionCaller(x, params);
 	}	
