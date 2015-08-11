@@ -4,6 +4,7 @@ package rng
 /*
    #cgo pkg-config: --define-variable=prefix=. gsl
    #include <gsl/gsl_rng.h>
+   #include <unistd.h>
 */
 import "C"
 

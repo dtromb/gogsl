@@ -5,6 +5,7 @@ package randist
    #cgo pkg-config: --define-variable=prefix=. gsl
    #include <gsl/gsl_randist.h>
    #include <gsl/gsl_cdf.h>
+   #include <unistd.h>
 */
 import "C"
 

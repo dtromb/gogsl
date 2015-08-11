@@ -1558,7 +1558,7 @@ int gsl_integration_glfixed_point (double a, double b, size_t i, double * xi, do
 void gsl_integration_glfixed_table_free (gsl_integration_glfixed_table * t)
 
 # SECTION{"Random Number Generation"}
-# PACKAGE{"github.com/dtromb/gogsl/rng", ["gsl/gsl_rng.h"],["gsl_rng","gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/rng", ["gsl/gsl_rng.h","unistd.h"],["gsl_rng","gsl"]}
 # GSL_REFTYPE{"gsl_rng",[]}
 # GSL_REFTYPE{"gsl_rng_type",["cPtr uintptr"]}
 # NAME{"RngAlloc"}
@@ -1604,7 +1604,7 @@ int gsl_qrng_memcpy (gsl_qrng * dest, const gsl_qrng * src)
 gsl_qrng * gsl_qrng_clone (const gsl_qrng * q)
 
 # SECTION{"Random Number Distributions"}
-# PACKAGE{"github.com/dtromb/gogsl/randist", ["gsl/gsl_randist.h","gsl/gsl_cdf.h"],["gsl_ran","gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/randist", ["gsl/gsl_randist.h","gsl/gsl_cdf.h","unistd.h"],["gsl_ran","gsl"]}
 # GSL_REFTYPE{"gsl_ran_discrete_t",[]}
 double gsl_ran_gaussian (const gsl_rng * r, double sigma)
 double gsl_ran_gaussian_pdf (double x, double sigma)
