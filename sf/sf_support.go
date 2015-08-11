@@ -55,14 +55,14 @@ func (r *GslSfResult) Ptr() uintptr {
 	if ptr != 0 {
 		return ptr
 	}
-	r.cData = make([]byte, GSL_SF_RESULT_STRUCT_SIZE)
-	ptr = ((*reflect.SliceHeader)(unsafe.Pointer(&r.cData))).Data
+	r.CData = make([]byte, GSL_SF_RESULT_STRUCT_SIZE)
+	ptr = ((*reflect.SliceHeader)(unsafe.Pointer(&r.CData))).Data
 	gogsl.InitializeGslStruct(r,ptr)
 	return ptr
 }
 
 func (r *GslSfResult) Dispose() {
-	r.cData = nil
+	r.CData = nil
 }
 
 func (r *GslSfResult) Val() float64 {
@@ -78,14 +78,14 @@ func (r *GslSfResultE10) Ptr() uintptr {
 	if ptr != 0 {
 		return ptr
 	}
-	r.cData = make([]byte, GSL_SF_RESULT_E10_STRUCT_SIZE)
-	ptr = ((*reflect.SliceHeader)(unsafe.Pointer(&r.cData))).Data
+	r.CData = make([]byte, GSL_SF_RESULT_E10_STRUCT_SIZE)
+	ptr = ((*reflect.SliceHeader)(unsafe.Pointer(&r.CData))).Data
 	gogsl.InitializeGslStruct(r,ptr)
 	return ptr
 }
 
 func (r *GslSfResultE10) Dispose() {
-	r.cData = nil
+	r.CData = nil
 }
 
 func (r *GslSfResultE10) Val() float64 {
