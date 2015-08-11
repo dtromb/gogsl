@@ -1588,7 +1588,7 @@ int gsl_rng_fread (FILE * stream, gsl_rng * r)
 # SECTION{"Quasi-Random Sequences"}
 # PACKAGE{"github.com/dtromb/gogsl/qrng", ["gsl/gsl_qrng.h"],["gsl_qrng"]}
 # GSL_REFTYPE{"gsl_qrng",[]}
-# GSL_REFTYPE{"gsl_qrng_type",[]}
+# GSL_REFTYPE{"gsl_qrng_type",["cPtr uintptr"]}
 # NAME{"QrngAlloc"}
 gsl_qrng * gsl_qrng_alloc (const gsl_qrng_type * T, unsigned int d)
 void gsl_qrng_free (gsl_qrng * q)

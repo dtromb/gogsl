@@ -33,10 +33,7 @@ gsl_rng_waterman14
 gsl_rng_fishman2x
 gsl_rng_coveyou
 
-gsl_qrng_niederreiter_2
-gsl_qrng_sobol
-gsl_qrng_halton
-gsl_qrng_reversehalton
+
 
 	    GSL_INTEG_COSINE
     GSL_INTEG_SINE

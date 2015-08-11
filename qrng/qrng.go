@@ -17,6 +17,7 @@ type GslQrng struct {
 
 type GslQrngType struct {
    gogsl.GslReference
+   cPtr uintptr
 }
 
 func QrngAlloc(t *GslQrngType, d uint32) *GslQrng {
