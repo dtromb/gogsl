@@ -5,6 +5,7 @@ package histogram
    #cgo pkg-config: --define-variable=prefix=. gsl
    #include <gsl/gsl_histogram.h>
    #include <gsl/gsl_histogram2d.h>
+   #include <unistd.h>
 */
 import "C"
 

@@ -1890,7 +1890,7 @@ double gsl_stats_$_quantile_from_sorted_data (const @ sorted_data[], size_t stri
 # GSL_PREFIX_TEMPLATE_END{}
 
 # SECTION{"Histograms"}
-# PACKAGE{"github.com/dtromb/gogsl/histogram", ["gsl/gsl_histogram.h","gsl/gsl_histogram2d.h"],["gsl_histogram","gsl"]}
+# PACKAGE{"github.com/dtromb/gogsl/histogram", ["gsl/gsl_histogram.h","gsl/gsl_histogram2d.h","unistd.h"],["gsl_histogram","gsl"]}
 # GSL_REFTYPE{"gsl_histogram",[]}
 # GSL_REFTYPE{"gsl_histogram_pdf",[]}
 # GSL_REFTYPE{"gsl_histogram2d",[]}
