@@ -11,7 +11,6 @@ import (
 var w *numint.GslIntegrationWorkspace = numint.IntegrationWorkspaceAlloc(1000)
 
 func F(x float64, params interface{}) float64 {
-    w.Dump()
 	alpha := params.(float64)
 	f := math.Log(alpha*x) / math.Sqrt(x)
 	return f
