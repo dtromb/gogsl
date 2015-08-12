@@ -7,8 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	//"runtime"
-	"github.com/kardianos/osext"
 	"strconv"
 	"strings"
 )
@@ -372,7 +370,7 @@ func StartPackage(name string, includes []string, prefixes []string) {
 	for k, v := range global_CTYPE_TO_GOTYPE {
 		global_GOTYPE_TO_CTYPE[v] = k
 	}
-	path := global_PACKAGE_BASE_PATH + name
+	path := filepath.Join(global_PACKAGE_BASE_PATH, name)
 	global_PACKAGE_PATH = path
 	fmt.Println("// PATH: " + path)
 	global_STRIP_PREFIXES = make([]string, len(prefixes))
@@ -463,10 +461,13 @@ func CurrentPackageName() string {
 }
 
 func FinishPackage() error {
-	os.MkdirAll(global_PACKAGE_PATH, 0700)
+	err := os.MkdirAll(global_PACKAGE_PATH, 0700)
+	if err != nil {
+		return err
+	}
 	pathParts := strings.Split(global_PACKAGE_PATH, "/")
 	fName := pathParts[len(pathParts)-1] + ".go"
-	fPath := global_PACKAGE_PATH + "/" + fName
+	fPath := filepath.Join(global_PACKAGE_PATH, fName)
 	fmt.Println("WRITING " + fPath + "...")
 	fileOut, err := os.OpenFile(fPath, os.O_TRUNC|os.O_RDWR|os.O_CREATE, 0700)
 	if err != nil {
@@ -475,7 +476,10 @@ func FinishPackage() error {
 	fileOut.WriteString(global_PREAMBLE.String())
 	fileOut.Write([]byte("\n"))
 	fileOut.WriteString(global_OUTPUT.String())
-	fileOut.Close()
+	err = fileOut.Close()
+	if err != nil {
+		return err
+	}
 	global_PACKAGE_PATH = ""
 	global_OUTPUT = &ByteBufferWriter{}
 	global_PREAMBLE = &ByteBufferWriter{}
@@ -1582,9 +1586,13 @@ func main() {
 	var templateLines []string
 	var templatePosition int
 
-	path, _ := osext.ExecutableFolder()
-	global_PACKAGE_BASE_PATH = path + "../../../../"
-	flistBytes, err := ioutil.ReadFile(path + "/../function-list")
+	gopath := strings.Split(os.Getenv("GOPATH"), ":")[0]
+	global_PACKAGE_BASE_PATH = filepath.Join(gopath, "src")
+	flistBytes, err := ioutil.ReadFile(filepath.Join(
+		gopath, "src",
+		"github.com/dtromb/gogsl",
+		"function-list",
+	))
 	flist := string(flistBytes)
 	if err != nil {
 		panic("Could not read function manifest")
