@@ -1,8 +1,8 @@
 package fft
 
-type Direction int 
+type Direction int
 
 const (
-	DirectionForward	Direction =	-1
-	DirectionBackward	Direction =	+1
+	DirectionForward  Direction = -1
+	DirectionBackward Direction = +1
 )

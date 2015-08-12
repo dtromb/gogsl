@@ -1,11 +1,9 @@
 package gogsl
 
-
 import (
 	"fmt"
 	"testing"
 )
-
 
 func TestError(t *testing.T) {
 	var gotErrorCalled bool

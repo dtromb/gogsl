@@ -1,21 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"path/filepath"
 	"errors"
+	"fmt"
 	"io/ioutil"
-	"regexp"
 	"os"
+	"path/filepath"
+	"regexp"
 	//"runtime"
+	"github.com/kardianos/osext"
 	"strconv"
 	"strings"
-	"github.com/kardianos/osext"
 )
 
 /*
 	#include <stdlib.h>
-	
+
 	// XXX - We assume here that size_t is unsigned - is this valid everywhere?
 	int get_c_size_t_size() {
 	int c;
@@ -27,7 +27,7 @@ import (
 		}
 		return c;
 	}
-	
+
 	int get_c_short_size() {
 	int c;
 	unsigned short k;
@@ -38,7 +38,7 @@ import (
 		}
 		return c;
 	}
-		
+
 	int get_c_int_size() {
 	int c;
 	unsigned int k;
@@ -49,7 +49,7 @@ import (
 		}
 		return c;
 	}
-	
+
 	int get_c_long_size() {
 	int c;
 	unsigned long k;
@@ -60,7 +60,7 @@ import (
 		}
 		return c;
 	}
-	
+
 	int get_c_long_long_size() {
 	int c;
 	unsigned long long k;
@@ -71,7 +71,7 @@ import (
 		}
 		return c;
 	}
-	
+
 */
 import "C"
 
@@ -79,20 +79,22 @@ var FUNCTION_TOK_RE *regexp.Regexp = regexp.MustCompile(`([a-zA-Z0-9_]+\s*|\*|,|
 var METADATA_RE *regexp.Regexp = regexp.MustCompile(`#\s*([a-zA-Z0-9_]+)\s*\{(\s*((("([^"\\]|\\")*")|\[\s*(("([^"\\]|\\")*"\s*),?)*\])\s*,?\s*)*\s*)\}`)
 var METADATA_ARGS_RE *regexp.Regexp = regexp.MustCompile(`(("([^"\\]|\\")*")|\[\s*(("([^"\\]|\\")*"\s*),?)*\])\s*`)
 var QUOTED_REP *regexp.Regexp = regexp.MustCompile(`\\"`)
+
 type Metainfo struct {
-	key string
+	key  string
 	args [][]string
 }
 
 type Wrapper struct {
-	preCall []string
-	callReplace string
-	postCall []string
+	preCall       []string
+	callReplace   string
+	postCall      []string
 	returnReplace string
-	suppressCall bool
+	suppressCall  bool
 }
 
-type TypeMapStrategy int 
+type TypeMapStrategy int
+
 const (
 	VALUE_CAST TypeMapStrategy = iota
 	GSL_COMPLEX
@@ -102,7 +104,7 @@ const (
 	GSL_FUNCTION
 	GSL_FUNCTION_FDF
 	GSL_MONTE_FUNCTION
-	OUTPTR		
+	OUTPTR
 	SLICEPTR
 	SLICEARRAY
 	FILE
@@ -111,79 +113,92 @@ const (
 	CPTR
 )
 
-func TypeMapStrategyFromString(name string) (TypeMapStrategy,error) {
+func TypeMapStrategyFromString(name string) (TypeMapStrategy, error) {
 	switch strings.ToLower(name) {
-		case "value_cast": return VALUE_CAST, nil
-		case "outptr": return OUTPTR, nil
-		case "gsl_complex": return GSL_COMPLEX, nil
-		case "gsl_complex_float": return GSL_COMPLEX_FLOAT, nil
-		case "gsl_reference": return GSL_REFERENCE, nil
-		case "gsl_reference_dtor": return GSL_REFERENCE_DTOR, nil
-		case "gsl_function": return GSL_FUNCTION, nil
-		case "gsl_function_fdf": return GSL_FUNCTION_FDF, nil
-		case "gsl_monte_function": return GSL_MONTE_FUNCTION, nil
-		case "sliceptr": return SLICEPTR, nil
-		case "slicearray": return SLICEARRAY, nil
-		case "file": return FILE, nil
-		case "string": return STRING, nil
-		case "void_return": return VOID_RETURN, nil
-		case "cptr": return CPTR, nil
+	case "value_cast":
+		return VALUE_CAST, nil
+	case "outptr":
+		return OUTPTR, nil
+	case "gsl_complex":
+		return GSL_COMPLEX, nil
+	case "gsl_complex_float":
+		return GSL_COMPLEX_FLOAT, nil
+	case "gsl_reference":
+		return GSL_REFERENCE, nil
+	case "gsl_reference_dtor":
+		return GSL_REFERENCE_DTOR, nil
+	case "gsl_function":
+		return GSL_FUNCTION, nil
+	case "gsl_function_fdf":
+		return GSL_FUNCTION_FDF, nil
+	case "gsl_monte_function":
+		return GSL_MONTE_FUNCTION, nil
+	case "sliceptr":
+		return SLICEPTR, nil
+	case "slicearray":
+		return SLICEARRAY, nil
+	case "file":
+		return FILE, nil
+	case "string":
+		return STRING, nil
+	case "void_return":
+		return VOID_RETURN, nil
+	case "cptr":
+		return CPTR, nil
 	}
-	return TypeMapStrategy(-1), errors.New("Invalid type map strategy: '"+name+"'")
+	return TypeMapStrategy(-1), errors.New("Invalid type map strategy: '" + name + "'")
 }
 
-
-
 func RestyleCNameToGo(name string, upcase bool) string {
-	parts := strings.Split(name,"_")
+	parts := strings.Split(name, "_")
 	for i, part := range parts {
 		if part == "" {
 			continue
 		}
-		parts[i] = strings.ToUpper(part[0:1])+part[1:]
+		parts[i] = strings.ToUpper(part[0:1]) + part[1:]
 	}
-	k := strings.Join(parts,"")
+	k := strings.Join(parts, "")
 	if !upcase {
-		k = strings.ToLower(k[0:1])+k[1:]
+		k = strings.ToLower(k[0:1]) + k[1:]
 	}
 	return k
 }
 
 //# PACKAGE{"gogsl",["gsl_math.h"],["GSL_","gsl_"]}
-func ParseMetainfo(line string) (*Metainfo,error) {
+func ParseMetainfo(line string) (*Metainfo, error) {
 	match := METADATA_RE.FindStringSubmatch(line)
 	if match == nil {
-		return nil, errors.New("invalid metainfo line: "+line)
+		return nil, errors.New("invalid metainfo line: " + line)
 	}
 	name := match[1]
-	args := strings.Trim(match[2]," \t")
+	args := strings.Trim(match[2], " \t")
 	if args == "" {
-		return &Metainfo{key:name}, nil
+		return &Metainfo{key: name}, nil
 	}
-	//argParts := strings.Split(args,",")	
-	argParts := METADATA_ARGS_RE.FindAllString(args,-1)
-	md := &Metainfo{key:name, args:make([][]string, len(argParts))}
+	//argParts := strings.Split(args,",")
+	argParts := METADATA_ARGS_RE.FindAllString(args, -1)
+	md := &Metainfo{key: name, args: make([][]string, len(argParts))}
 	for i, arg := range argParts {
 		arg = strings.Trim(arg, " \t")
 		if arg[0] == '[' {
-			arg = arg[1:len(arg)-1]
+			arg = arg[1 : len(arg)-1]
 			arg = strings.Trim(arg, " \t")
 			if arg != "" {
-				argParts := strings.Split(arg,",")
+				argParts := strings.Split(arg, ",")
 				md.args[i] = make([]string, len(argParts))
 				for j, qp := range argParts {
-					qp = strings.Trim(qp," \t")
-					qp = qp[1:len(qp)-1]
-					qp = QUOTED_REP.ReplaceAllString(qp,"\"")
+					qp = strings.Trim(qp, " \t")
+					qp = qp[1 : len(qp)-1]
+					qp = QUOTED_REP.ReplaceAllString(qp, "\"")
 					md.args[i][j] = qp
 				}
 			} else {
 				md.args[i] = []string{}
 			}
 		} else {
-			arg = arg[1:len(arg)-1]
-			arg = QUOTED_REP.ReplaceAllString(arg,"\"")
-			md.args[i] = make([]string,1)
+			arg = arg[1 : len(arg)-1]
+			arg = QUOTED_REP.ReplaceAllString(arg, "\"")
+			md.args[i] = make([]string, 1)
 			md.args[i][0] = arg
 		}
 	}
@@ -191,7 +206,7 @@ func ParseMetainfo(line string) (*Metainfo,error) {
 }
 
 func StartSection(section string) {
-	fmt.Println("// SECTION: "+section)	
+	fmt.Println("// SECTION: " + section)
 }
 
 func GetIntSize() int {
@@ -245,13 +260,13 @@ func (bbw *ByteBufferWriter) String() string {
 }
 
 func AddImport(name string) {
-	fmt.Println("IMPORT! "+CurrentPackageName()+" <- "+name)
+	fmt.Println("IMPORT! " + CurrentPackageName() + " <- " + name)
 	path := filepath.Clean(global_PACKAGE_PATH)
 	basePath := filepath.Clean(global_PACKAGE_BASE_PATH)
-	if strings.HasPrefix(path,basePath) {
+	if strings.HasPrefix(path, basePath) {
 		path = path[len(basePath):]
 	}
-	if strings.HasPrefix(path,"/") {
+	if strings.HasPrefix(path, "/") {
 		path = path[1:]
 	}
 	if path == name {
@@ -264,10 +279,10 @@ func AddImport(name string) {
 		}
 	}
 	global_GO_IMPORTS = append(global_GO_IMPORTS, name)
-	if strings.HasSuffix(name,"complex") {
-		global_PREAMBLE.Write([]byte("import complex_ \""+name+"\"\n"))
+	if strings.HasSuffix(name, "complex") {
+		global_PREAMBLE.Write([]byte("import complex_ \"" + name + "\"\n"))
 	} else {
-		global_PREAMBLE.Write([]byte("import \""+name+"\"\n"))
+		global_PREAMBLE.Write([]byte("import \"" + name + "\"\n"))
 	}
 }
 
@@ -275,11 +290,12 @@ var global_CTYPES_TO_REF_TYPES map[string]string = make(map[string]string)
 var global_PACKAGES_BY_REFERENCE_TYPE map[string]string = make(map[string]string)
 var global_CTYPES_TO_ENUM_TYPES map[string]string = make(map[string]string)
 var global_PACKAGES_BY_ENUM_TYPE map[string]string = make(map[string]string)
+
 func GslReferenceType(name string, fields []string) {
 	AddImport("unsafe")
 	AddImport("github.com/dtromb/gogsl")
 	goTypeName := RestyleCNameToGo(name, true)
-	typedecl := fmt.Sprintf("type %s struct {\n   gogsl.GslReference\n",goTypeName)
+	typedecl := fmt.Sprintf("type %s struct {\n   gogsl.GslReference\n", goTypeName)
 	for _, field := range fields {
 		typedecl = fmt.Sprintf("%s   %s\n", typedecl, field)
 	}
@@ -287,18 +303,19 @@ func GslReferenceType(name string, fields []string) {
 	global_OUTPUT.Write([]byte(typedecl))
 	global_PACKAGES_BY_REFERENCE_TYPE[name] = global_PACKAGE_PATH
 	global_CTYPES_TO_REF_TYPES[name] = goTypeName
-	fmt.Println("REF TYPE: "+name+" -> "+goTypeName)
+	fmt.Println("REF TYPE: " + name + " -> " + goTypeName)
 }
 
 var global_FUNCTION_NAME_OVERRIDE string
+
 func GslName(name string) {
 	global_FUNCTION_NAME_OVERRIDE = name
 }
 
 func GslEnumType(name string) {
 	var rname string
-	if strings.HasSuffix(name,"_t") {
-		rname = name[0:len(name)-2]
+	if strings.HasSuffix(name, "_t") {
+		rname = name[0 : len(name)-2]
 	} else {
 		rname = name
 	}
@@ -307,7 +324,7 @@ func GslEnumType(name string) {
 	global_OUTPUT.Write([]byte(typedecl))
 	global_PACKAGES_BY_ENUM_TYPE[name] = global_PACKAGE_PATH
 	global_CTYPES_TO_ENUM_TYPES[name] = goTypeName
-	fmt.Println("ENUM TYPE: "+name+" -> "+goTypeName)
+	fmt.Println("ENUM TYPE: " + name + " -> " + goTypeName)
 }
 
 func StartPackage(name string, includes []string, prefixes []string) {
@@ -317,8 +334,8 @@ func StartPackage(name string, includes []string, prefixes []string) {
 			panic(err.Error())
 		}
 	}
-	fmt.Println("// PACKAGE: "+name)
-	global_IS_COMPLEX_PACKAGE = strings.HasSuffix(name,"/complex")
+	fmt.Println("// PACKAGE: " + name)
+	global_IS_COMPLEX_PACKAGE = strings.HasSuffix(name, "/complex")
 	// Reset type mappings to default.
 	global_CTYPE_TO_GOTYPE = make(map[string]string)
 	global_CTYPE_TO_STRATEGY = make(map[string]TypeMapStrategy)
@@ -357,59 +374,57 @@ func StartPackage(name string, includes []string, prefixes []string) {
 	}
 	path := global_PACKAGE_BASE_PATH + name
 	global_PACKAGE_PATH = path
-	fmt.Println("// PATH: "+path)
+	fmt.Println("// PATH: " + path)
 	global_STRIP_PREFIXES = make([]string, len(prefixes))
 	copy(global_STRIP_PREFIXES, prefixes)
 	for _, include := range includes {
-		fmt.Println("// INCLUDE:  #include <"+include+">")
+		fmt.Println("// INCLUDE:  #include <" + include + ">")
 	}
-	packageParts := strings.Split(name,"/")
+	packageParts := strings.Split(name, "/")
 	packageName := packageParts[len(packageParts)-1]
 	global_OUTPUT = &ByteBufferWriter{}
 	global_PREAMBLE = &ByteBufferWriter{}
 	global_PREAMBLE.Write([]byte("//////////        AUTOMATICALLY GENERATED CODE - DO NOT EDIT        //////////\n"))
 	global_PREAMBLE.Write([]byte(fmt.Sprintf("package %s\n\n/*\n   #cgo pkg-config: --define-variable=prefix=. gsl\n", packageName)))
 	for _, include := range includes {
-		global_PREAMBLE.Write([]byte(fmt.Sprintf("   #include <%s>\n",include)))
+		global_PREAMBLE.Write([]byte(fmt.Sprintf("   #include <%s>\n", include)))
 	}
 	global_PREAMBLE.Write([]byte("*/\nimport \"C\"\n\n"))
 }
 
 func QualifyPackage(pkg string, symbol string) string {
-	fmt.Println("QUALIFY: "+pkg+" | "+CurrentPackageName()+": "+symbol)
+	fmt.Println("QUALIFY: " + pkg + " | " + CurrentPackageName() + ": " + symbol)
 	if CurrentPackageName() == pkg {
 		return symbol
 	}
-	pkgPath := strings.Split(pkg,"/")
+	pkgPath := strings.Split(pkg, "/")
 	return fmt.Sprintf("%s.%s", pkgPath[len(pkgPath)-1], symbol)
 }
 
-
-
 func QualifyType(cType string, goType string) string {
 	var baseType string
-	if strings.HasSuffix(cType,"*") {
-		baseType = cType[0:len(cType)-1]
+	if strings.HasSuffix(cType, "*") {
+		baseType = cType[0 : len(cType)-1]
 	}
-	if enumPkg, has := global_PACKAGES_BY_ENUM_TYPE[cType]; has {	
+	if enumPkg, has := global_PACKAGES_BY_ENUM_TYPE[cType]; has {
 		pkg := CanonicalPackageName(enumPkg)
 		AddImport(pkg)
 		goType = QualifyPackage(pkg, goType)
 		return goType
 	}
-	if enumPkg, has := global_PACKAGES_BY_ENUM_TYPE[baseType]; has {	
+	if enumPkg, has := global_PACKAGES_BY_ENUM_TYPE[baseType]; has {
 		pkg := CanonicalPackageName(enumPkg)
 		AddImport(pkg)
 		goType = QualifyPackage(pkg, goType)
 		return goType
 	}
-	if structPkg, has := global_PACKAGES_BY_REFERENCE_TYPE[cType]; has {	
+	if structPkg, has := global_PACKAGES_BY_REFERENCE_TYPE[cType]; has {
 		pkg := CanonicalPackageName(structPkg)
 		AddImport(pkg)
 		goType = QualifyPackage(pkg, goType)
 		return goType
 	}
-	if structPkg, has := global_PACKAGES_BY_REFERENCE_TYPE[baseType]; has {	
+	if structPkg, has := global_PACKAGES_BY_REFERENCE_TYPE[baseType]; has {
 		pkg := CanonicalPackageName(structPkg)
 		AddImport(pkg)
 		goType = QualifyPackage(pkg, goType)
@@ -427,13 +442,13 @@ func CanonicalPackageName(path string) string {
 	if base[0] == '/' {
 		base = base[1:]
 	}
-	if strings.HasSuffix(path,"/") {
-		path = path[0:len(path)-1]
+	if strings.HasSuffix(path, "/") {
+		path = path[0 : len(path)-1]
 	}
-	if strings.HasSuffix(base,"/") {
-		base = base[0:len(base)-1]
+	if strings.HasSuffix(base, "/") {
+		base = base[0 : len(base)-1]
 	}
-	if strings.HasPrefix(path,base) {
+	if strings.HasPrefix(path, base) {
 		path = path[len(base):]
 	}
 	if path[0] == '/' {
@@ -449,11 +464,11 @@ func CurrentPackageName() string {
 
 func FinishPackage() error {
 	os.MkdirAll(global_PACKAGE_PATH, 0700)
-	pathParts := strings.Split(global_PACKAGE_PATH,"/")
-	fName := pathParts[len(pathParts)-1]+".go"
-	fPath := global_PACKAGE_PATH+"/"+fName
-	fmt.Println("WRITING "+fPath+"...")
-	fileOut, err := os.OpenFile(fPath, os.O_TRUNC | os.O_RDWR | os.O_CREATE, 0700)
+	pathParts := strings.Split(global_PACKAGE_PATH, "/")
+	fName := pathParts[len(pathParts)-1] + ".go"
+	fPath := global_PACKAGE_PATH + "/" + fName
+	fmt.Println("WRITING " + fPath + "...")
+	fileOut, err := os.OpenFile(fPath, os.O_TRUNC|os.O_RDWR|os.O_CREATE, 0700)
 	if err != nil {
 		return err
 	}
@@ -471,28 +486,37 @@ func FinishPackage() error {
 func GetTypeMapStrategy(cType string, place int) (TypeMapStrategy, error) {
 	if strat, has := global_ARG_MAP_STRATEGIES[place]; has {
 		return strat, nil
-	}	
+	}
 	if strat, has := global_CTYPE_TO_STRATEGY[cType]; has {
 		return strat, nil
 	}
-	switch(cType) {
-		case "gsl_complex": return GSL_COMPLEX, nil
-		case "gsl_complex_float": return GSL_COMPLEX_FLOAT, nil
-		case "gsl_function": return GSL_FUNCTION, nil
-		case "gsl_function*": return GSL_FUNCTION, nil
-		case "gsl_function_fdf": return GSL_FUNCTION_FDF, nil
-		case "gsl_function_fdf*": return GSL_FUNCTION_FDF, nil
-		case "gsl_monte_function": return GSL_MONTE_FUNCTION, nil
-		case "gsl_monte_function*": return GSL_MONTE_FUNCTION, nil
-		case "void": return VOID_RETURN, nil
+	switch cType {
+	case "gsl_complex":
+		return GSL_COMPLEX, nil
+	case "gsl_complex_float":
+		return GSL_COMPLEX_FLOAT, nil
+	case "gsl_function":
+		return GSL_FUNCTION, nil
+	case "gsl_function*":
+		return GSL_FUNCTION, nil
+	case "gsl_function_fdf":
+		return GSL_FUNCTION_FDF, nil
+	case "gsl_function_fdf*":
+		return GSL_FUNCTION_FDF, nil
+	case "gsl_monte_function":
+		return GSL_MONTE_FUNCTION, nil
+	case "gsl_monte_function*":
+		return GSL_MONTE_FUNCTION, nil
+	case "void":
+		return VOID_RETURN, nil
 	}
 	var refName string
-	if strings.HasSuffix(cType,"*") {
-		refName = cType[0:len(cType)-1]
+	if strings.HasSuffix(cType, "*") {
+		refName = cType[0 : len(cType)-1]
 	} else {
 		refName = cType
 	}
-	if strings.HasSuffix(cType,"[]") {
+	if strings.HasSuffix(cType, "[]") {
 		return SLICEARRAY, nil
 	}
 	if _, has := global_CTYPES_TO_REF_TYPES[refName]; has {
@@ -501,17 +525,22 @@ func GetTypeMapStrategy(cType string, place int) (TypeMapStrategy, error) {
 	if _, has := global_CTYPES_TO_REF_TYPES[cType]; has {
 		return GSL_REFERENCE, nil
 	}
-	switch (cType) {
-		case "gsl_complex_packed_ptr": return SLICEPTR, nil
-		case "gsl_complex_float_packed_ptr": return SLICEPTR, nil
-		case "gsl_complex_packed_array": return SLICEPTR, nil
-		case "gsl_complex_float_packed_array": return SLICEPTR, nil
-		case "FILE": fallthrough
-		case "FILE*": return FILE, nil
+	switch cType {
+	case "gsl_complex_packed_ptr":
+		return SLICEPTR, nil
+	case "gsl_complex_float_packed_ptr":
+		return SLICEPTR, nil
+	case "gsl_complex_packed_array":
+		return SLICEPTR, nil
+	case "gsl_complex_float_packed_array":
+		return SLICEPTR, nil
+	case "FILE":
+		fallthrough
+	case "FILE*":
+		return FILE, nil
 	}
 	return VALUE_CAST, nil
-}	
-
+}
 
 var global_CTYPE_TO_GOTYPE map[string]string = make(map[string]string)
 var global_GOTYPE_TO_CTYPE map[string]string = make(map[string]string)
@@ -543,11 +572,11 @@ func MapCTypeName(cName string) (string, error) {
 	if goType, has := global_CTYPE_TO_GOTYPE[cName]; has {
 		return goType, nil
 	}
-	fmt.Println("NOTYPE: "+cName)
+	fmt.Println("NOTYPE: " + cName)
 	fmt.Printf("TYPEMAP len=%d\n", len(global_CTYPE_TO_GOTYPE))
 	var refName string
-	if strings.HasSuffix(cName,"*") {
-		refName = cName[0:len(cName)-1]
+	if strings.HasSuffix(cName, "*") {
+		refName = cName[0 : len(cName)-1]
 	} else {
 		refName = cName
 	}
@@ -557,29 +586,33 @@ func MapCTypeName(cName string) (string, error) {
 	if enumType, has := global_CTYPES_TO_ENUM_TYPES[refName]; has {
 		return enumType, nil
 	}
-	if strings.HasSuffix(cName,"[]") {
-		baseName := cName[0:len(cName)-2]
+	if strings.HasSuffix(cName, "[]") {
+		baseName := cName[0 : len(cName)-2]
 		goBaseType, err := MapCTypeName(baseName)
 		if err == nil {
-			return "[]"+goBaseType, nil
+			return "[]" + goBaseType, nil
 		}
-	} 
-	return "?", errors.New("cannot map C type to Go type: "+cName)
+	}
+	return "?", errors.New("cannot map C type to Go type: " + cName)
 }
 
 func IsPointerType(typename string) bool {
-	switch(typename) {
-		case "gsl_complex_packed_ptr": return true
-		case "gsl_complex_float_packed_ptr": return true
-		case "gsl_complex_packed_array": return true
-		case "gsl_complex_float_packed_array": return true
+	switch typename {
+	case "gsl_complex_packed_ptr":
+		return true
+	case "gsl_complex_float_packed_ptr":
+		return true
+	case "gsl_complex_packed_array":
+		return true
+	case "gsl_complex_float_packed_array":
+		return true
 	}
-	return strings.HasSuffix(typename,"*")
+	return strings.HasSuffix(typename, "*")
 }
 
 func ValueCastExpression(castType string, expr string) string {
 	var castExpr string
-	if  strings.HasPrefix(castType, "*") ||
+	if strings.HasPrefix(castType, "*") ||
 		strings.HasPrefix(castType, "[]") ||
 		strings.HasPrefix(castType, "map") ||
 		strings.HasPrefix(castType, "chan") {
@@ -599,20 +632,20 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 	var argMapStrategies []TypeMapStrategy = make([]TypeMapStrategy, len(cArgTypes))
 	var outptrReturnIndex map[int]int = make(map[int]int)
 	var returnReferenceType string
-	
-	var returnMapStrategies []TypeMapStrategy = []TypeMapStrategy{} 
+
+	var returnMapStrategies []TypeMapStrategy = []TypeMapStrategy{}
 	for _, rt := range cRetType {
-		rms, err := GetTypeMapStrategy(rt,0)
+		rms, err := GetTypeMapStrategy(rt, 0)
 		if err == nil {
 			returnMapStrategies = append(returnMapStrategies, rms)
 		} else {
 			returnMapStrategies = append(returnMapStrategies, VALUE_CAST)
 		}
 	}
-	
+
 	// First write function signature.
-	cName = strings.Trim(cName," \t")
-	callName := "C."+cName
+	cName = strings.Trim(cName, " \t")
+	callName := "C." + cName
 	for _, prefix := range global_STRIP_PREFIXES {
 		if strings.HasPrefix(cName, prefix+"_") {
 			cName = cName[len(prefix):]
@@ -629,13 +662,12 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 	if len(cArgTypes) != len(cArgNames) {
 		return "", errors.New("arg name/type length mismatch")
 	}
-	
-	
+
 	// Special gsl reference dtor handling per default.
 	if strings.HasSuffix(callName, "_free") && len(cArgTypes) == 1 && len(cRetType) == 1 {
 		var argType string
-		if strings.HasSuffix(cArgTypes[0],"*") {
-			argType = cArgTypes[0][0:len(cArgTypes[0])-1]
+		if strings.HasSuffix(cArgTypes[0], "*") {
+			argType = cArgTypes[0][0 : len(cArgTypes[0])-1]
 		} else {
 			argType = cArgTypes[0]
 		}
@@ -644,14 +676,14 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 			returnReferenceType = rType
 		}
 	}
-	
+
 	// Write the function decl.
 	if returnMapStrategies[0] == GSL_REFERENCE_DTOR {
 		buf = append(buf, fmt.Sprintf("func (x *%s) Dispose(", returnReferenceType)...)
 	} else {
 		buf = append(buf, fmt.Sprintf("func %s(", cName)...)
 	}
-	
+
 	for i, arg := range cArgNames {
 		arg = RestyleCNameToGo(arg, false)
 		if i == 0 && returnMapStrategies[0] == GSL_REFERENCE_DTOR {
@@ -662,9 +694,11 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 		if err != nil {
 			return "", err
 		}
-		switch (tms) {
-			case CPTR: fallthrough
-			case VALUE_CAST: {
+		switch tms {
+		case CPTR:
+			fallthrough
+		case VALUE_CAST:
+			{
 				var goArgType string
 				var err error
 				if overrideType, has := global_ARG_MAP_TYPE_OVERRIDES[i]; has {
@@ -672,102 +706,110 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 				} else {
 					goArgType, err = MapCTypeName(cArgTypes[i])
 				}
-				goArgTypes = append(goArgTypes,goArgType)
+				goArgTypes = append(goArgTypes, goArgType)
 				if err != nil {
 					return "", err
 				}
-				if enumPkg, has := global_PACKAGES_BY_ENUM_TYPE[cArgTypes[i]]; has {	
+				if enumPkg, has := global_PACKAGES_BY_ENUM_TYPE[cArgTypes[i]]; has {
 					pkg := CanonicalPackageName(enumPkg)
 					AddImport(pkg)
 					goArgType = QualifyPackage(pkg, goArgType)
 				}
 				buf = append(buf, fmt.Sprintf("%s %s", arg, goArgType)...)
-				if i < len(cArgNames) - 1 {
+				if i < len(cArgNames)-1 {
 					buf = append(buf, ", "...)
 				}
 			}
-			case GSL_COMPLEX: {
+		case GSL_COMPLEX:
+			{
 				goArgTypes = append(goArgTypes, "complex128")
 				buf = append(buf, fmt.Sprintf("%s complex128", arg)...)
-				if i < len(cArgNames) - 1 {
+				if i < len(cArgNames)-1 {
 					buf = append(buf, ", "...)
 				}
 			}
-			case GSL_COMPLEX_FLOAT: {
+		case GSL_COMPLEX_FLOAT:
+			{
 				goArgTypes = append(goArgTypes, "complex64")
 				buf = append(buf, fmt.Sprintf("%s complex64", arg)...)
-				if i < len(cArgNames) - 1 {
+				if i < len(cArgNames)-1 {
 					buf = append(buf, ", "...)
 				}
 			}
-			case GSL_FUNCTION: {
+		case GSL_FUNCTION:
+			{
 				AddImport("github.com/dtromb/gogsl")
 				typeName := QualifyPackage("github.com/dtromb/gogsl", "GslFunction")
 				goArgTypes = append(goArgTypes, typeName)
 				buf = append(buf, fmt.Sprintf("%s *%s", arg, typeName)...)
-				if i < len(cArgNames) - 1 {
+				if i < len(cArgNames)-1 {
 					buf = append(buf, ", "...)
 				}
 			}
-			case GSL_FUNCTION_FDF: {
+		case GSL_FUNCTION_FDF:
+			{
 				AddImport("github.com/dtromb/gogsl")
 				typeName := QualifyPackage("github.com/dtromb/gogsl", "GslFunctionFdf")
 				goArgTypes = append(goArgTypes, typeName)
 				buf = append(buf, fmt.Sprintf("%s *%s", arg, typeName)...)
-				if i < len(cArgNames) - 1 {
+				if i < len(cArgNames)-1 {
 					buf = append(buf, ", "...)
 				}
 			}
-			case GSL_MONTE_FUNCTION: {
+		case GSL_MONTE_FUNCTION:
+			{
 				AddImport("github.com/dtromb/gogsl")
 				typeName := QualifyPackage("github.com/dtromb/gogsl", "GslMonteFunction")
 				goArgTypes = append(goArgTypes, typeName)
 				buf = append(buf, fmt.Sprintf("%s *%s", arg, typeName)...)
-				if i < len(cArgNames) - 1 {
+				if i < len(cArgNames)-1 {
 					buf = append(buf, ", "...)
 				}
 			}
-			case GSL_REFERENCE: {
+		case GSL_REFERENCE:
+			{
 				var refType string
-				if strings.HasSuffix(cArgTypes[i],"*") {
-					refType = cArgTypes[i][0:len(cArgTypes[i])-1]
+				if strings.HasSuffix(cArgTypes[i], "*") {
+					refType = cArgTypes[i][0 : len(cArgTypes[i])-1]
 				} else {
 					refType = cArgTypes[i]
 				}
 				pkg := CanonicalPackageName(global_PACKAGES_BY_REFERENCE_TYPE[refType])
-				fmt.Println("PBRT["+refType+"] = "+pkg)
+				fmt.Println("PBRT[" + refType + "] = " + pkg)
 				AddImport(pkg)
-				if rType, has := global_CTYPES_TO_REF_TYPES[refType]; has {	
-					buf = append(buf,fmt.Sprintf("%s *%s", arg, QualifyPackage(pkg,rType))...)				
-					if i < len(cArgNames) - 1 {
+				if rType, has := global_CTYPES_TO_REF_TYPES[refType]; has {
+					buf = append(buf, fmt.Sprintf("%s *%s", arg, QualifyPackage(pkg, rType))...)
+					if i < len(cArgNames)-1 {
 						buf = append(buf, ", "...)
 					}
 				} else {
-					return "", errors.New("undefined reference type: '"+refType+"'")
+					return "", errors.New("undefined reference type: '" + refType + "'")
 				}
 			}
-			case OUTPTR: {
+		case OUTPTR:
+			{
 				AddImport("unsafe")
-				if !strings.HasSuffix(cArgTypes[i],"*") {
+				if !strings.HasSuffix(cArgTypes[i], "*") {
 					return "", errors.New("OUTPTR target type must be a pointer")
 				}
-				retType := cArgTypes[i][0:len(cArgTypes[i])-1]
+				retType := cArgTypes[i][0 : len(cArgTypes[i])-1]
 				outptrReturnIndex[len(cRetType)] = i
 				cRetType = append(cRetType, retType)
 				cGoType, err := MapCTypeNameToCGo(retType)
 				if err != nil {
 					return "", err
 				}
-				returnMapStrategies = append(returnMapStrategies,OUTPTR)
+				returnMapStrategies = append(returnMapStrategies, OUTPTR)
 				body.preCall = append(body.preCall, fmt.Sprintf("var _outptr_%d %s", i, cGoType))
 			}
-			case SLICEPTR: {
+		case SLICEPTR:
+			{
 				var refType string
 				if !IsPointerType(cArgTypes[i]) {
 					return "", errors.New("SLICEPTR argument type is not a pointer")
 				}
-				if strings.HasSuffix(cArgTypes[i],"*") {
-					refType = cArgTypes[i][0:len(cArgTypes[i])-1]
+				if strings.HasSuffix(cArgTypes[i], "*") {
+					refType = cArgTypes[i][0 : len(cArgTypes[i])-1]
 				} else {
 					refType = cArgTypes[i]
 				}
@@ -775,16 +817,17 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 				if err != nil {
 					return "", err
 				}
-				buf = append(buf, fmt.Sprintf("%s []%s", arg, baseGoType)...)				
-				if i < len(cArgNames) - 1 {
+				buf = append(buf, fmt.Sprintf("%s []%s", arg, baseGoType)...)
+				if i < len(cArgNames)-1 {
 					buf = append(buf, ", "...)
 				}
 			}
-			case SLICEARRAY: {
-				
+		case SLICEARRAY:
+			{
+
 				var refType string
-				if strings.HasSuffix(cArgTypes[i],"[]") {
-					refType = cArgTypes[i][0:len(cArgTypes[i])-2]
+				if strings.HasSuffix(cArgTypes[i], "[]") {
+					refType = cArgTypes[i][0 : len(cArgTypes[i])-2]
 				} else {
 					return "", errors.New("SLICEARRAY argument type is not an array")
 				}
@@ -792,43 +835,46 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 				if err != nil {
 					return "", err
 				}
-				buf = append(buf, fmt.Sprintf("%s []%s", arg, baseGoType)...)				
-				if i < len(cArgNames) - 1 {
+				buf = append(buf, fmt.Sprintf("%s []%s", arg, baseGoType)...)
+				if i < len(cArgNames)-1 {
 					buf = append(buf, ", "...)
 				}
 			}
-			case FILE: {
+		case FILE:
+			{
 				AddImport("os")
-				buf = append(buf, fmt.Sprintf("%s *os.File", arg)...)					
-				if i < len(cArgNames) - 1 {
+				buf = append(buf, fmt.Sprintf("%s *os.File", arg)...)
+				if i < len(cArgNames)-1 {
 					buf = append(buf, ", "...)
 				}
 			}
-			case STRING: {
-				buf = append(buf, fmt.Sprintf("%s string", arg)...)					
-				if i < len(cArgNames) - 1 {
+		case STRING:
+			{
+				buf = append(buf, fmt.Sprintf("%s string", arg)...)
+				if i < len(cArgNames)-1 {
 					buf = append(buf, ", "...)
 				}
 			}
-			default: {
+		default:
+			{
 				return "", errors.New("unknown argument type map strategy")
 			}
 		}
 	}
 	voidResult := cRetType[0] == "void"
 	dangleChk := string(buf)
-	if strings.HasSuffix(dangleChk,", ") {
-		buf = []byte(dangleChk[0:len(dangleChk)-2])
+	if strings.HasSuffix(dangleChk, ", ") {
+		buf = []byte(dangleChk[0 : len(dangleChk)-2])
 	}
-	
-	
-	
+
 	switch len(cRetType) {
-		case 0: {
+	case 0:
+		{
 			buf = append(buf, ") { \n"...)
 		}
-		case 1: {
-			fmt.Println("RET TYPE: "+cRetType[0])
+	case 1:
+		{
+			fmt.Println("RET TYPE: " + cRetType[0])
 			if cRetType[0] != "void" {
 				var err error
 				if overrideType, has := global_ARG_MAP_TYPE_OVERRIDES[0]; has {
@@ -842,7 +888,7 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 				fmt.Printf("QUALIFY RETURN TYPE %s | %s\n", cRetType[0], goRetType)
 				goRetType = QualifyType(cRetType[0], goRetType)
 				fmt.Printf("     ... %s\n", goRetType)
-				if returnMapStrategies[0] == GSL_REFERENCE { 
+				if returnMapStrategies[0] == GSL_REFERENCE {
 					buf = append(buf, fmt.Sprintf(") *%s {\n", goRetType)...)
 				} else {
 					buf = append(buf, fmt.Sprintf(") %s {\n", goRetType)...)
@@ -851,11 +897,12 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 				buf = append(buf, ") {\n"...)
 			}
 		}
-		default: {
+	default:
+		{
 			buf = append(buf, ") ("...)
 			for i, rt := range cRetType {
 				if rt == "void" {
-					
+
 					continue
 				}
 				var gort string
@@ -864,8 +911,8 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 					gort = overrideType
 				} else {
 					gort, err = MapCTypeName(rt)
-				} 
-				
+				}
+
 				//gort, err := MapCTypeName(rt)
 				if i == 0 {
 					goRetType = gort
@@ -879,20 +926,20 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 				} else {
 					buf = append(buf, gort...)
 				}
-				if i < len(cRetType) - 1 {
+				if i < len(cRetType)-1 {
 					buf = append(buf, ", "...)
 				}
 			}
 			buf = append(buf, ") {\n"...)
 		}
 	}
-	
+
 	// Transform the argument names.
-	argNames := make([]string, len(cArgNames)) 
+	argNames := make([]string, len(cArgNames))
 	for i, arg := range cArgNames {
 		argNames[i] = RestyleCNameToGo(arg, false)
 	}
-	
+
 	// Map the arguments to subexpressions.
 	argExprs := make([]string, len(cArgNames))
 	for i, arg := range argNames {
@@ -903,26 +950,29 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 		if err != nil {
 			return "", err
 		}
-		switch(tms) {
-			case VALUE_CAST: {
+		switch tms {
+		case VALUE_CAST:
+			{
 				fmt.Printf("VALUE CAST: %d named %s as %s\n", i, argNames[i], cArgTypes[i])
-				cgoType, err := MapCTypeNameToCGo(cArgTypes[i])	
+				cgoType, err := MapCTypeNameToCGo(cArgTypes[i])
 				if err != nil {
 					return "", err
-				}			
+				}
 				argExprs[i] = ValueCastExpression(cgoType, argNames[i])
 			}
-			case CPTR: {
+		case CPTR:
+			{
 				AddImport("unsafe")
-				cgoType, err := MapCTypeNameToCGo(cArgTypes[i])	
+				cgoType, err := MapCTypeNameToCGo(cArgTypes[i])
 				if err != nil {
 					return "", err
-				}		
+				}
 				expr := fmt.Sprintf("unsafe.Pointer(%s.CPtr())", argNames[i])
 				argExprs[i] = ValueCastExpression(cgoType, expr)
 			}
-			case GSL_COMPLEX: {
-				AddImport("github.com/dtromb/gogsl/complex")		
+		case GSL_COMPLEX:
+			{
+				AddImport("github.com/dtromb/gogsl/complex")
 				if global_IS_COMPLEX_PACKAGE {
 					body.preCall = append(body.preCall, fmt.Sprintf("_arg_%d := GoComplexToGsl(%s)", i, arg))
 				} else {
@@ -930,8 +980,9 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 				}
 				argExprs[i] = fmt.Sprintf("*(*C.gsl_complex)(unsafe.Pointer(_arg_%d))", i)
 			}
-			case GSL_COMPLEX_FLOAT: {
-				AddImport("github.com/dtromb/gogsl/complex")		
+		case GSL_COMPLEX_FLOAT:
+			{
+				AddImport("github.com/dtromb/gogsl/complex")
 				if global_IS_COMPLEX_PACKAGE {
 					body.preCall = append(body.preCall, fmt.Sprintf("_arg_%d := GoComplexFloatToGsl(%s)", i, arg))
 				} else {
@@ -939,46 +990,52 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 				}
 				argExprs[i] = fmt.Sprintf("*(*C.gsl_complex_float)(unsafe.Pointer(_arg_%d))", i)
 			}
-			case GSL_FUNCTION: {	
+		case GSL_FUNCTION:
+			{
 				AddImport("unsafe")
-				fInit := QualifyPackage("github.com/dtromb/gogsl","InitializeGslFunction")
+				fInit := QualifyPackage("github.com/dtromb/gogsl", "InitializeGslFunction")
 				body.preCall = append(body.preCall, fmt.Sprintf("%s(%s)", fInit, arg))
-				argExprs[i] = fmt.Sprintf("(*C.gsl_function)(unsafe.Pointer(%s.CPtr()))",arg)
+				argExprs[i] = fmt.Sprintf("(*C.gsl_function)(unsafe.Pointer(%s.CPtr()))", arg)
 			}
-			case GSL_FUNCTION_FDF: {	
+		case GSL_FUNCTION_FDF:
+			{
 				AddImport("unsafe")
-				fInit := QualifyPackage("github.com/dtromb/gogsl","InitializeGslFunctionFdf")
+				fInit := QualifyPackage("github.com/dtromb/gogsl", "InitializeGslFunctionFdf")
 				body.preCall = append(body.preCall, fmt.Sprintf("%s(%s)", fInit, arg))
-				argExprs[i] = fmt.Sprintf("(*C.gsl_function_fdf)(unsafe.Pointer(%s.CPtr()))",arg)
+				argExprs[i] = fmt.Sprintf("(*C.gsl_function_fdf)(unsafe.Pointer(%s.CPtr()))", arg)
 			}
-			case GSL_MONTE_FUNCTION: {	
+		case GSL_MONTE_FUNCTION:
+			{
 				AddImport("unsafe")
-				fInit := QualifyPackage("github.com/dtromb/gogsl","InitializeGslMonteFunction")
+				fInit := QualifyPackage("github.com/dtromb/gogsl", "InitializeGslMonteFunction")
 				body.preCall = append(body.preCall, fmt.Sprintf("%s(%s)", fInit, arg))
-				argExprs[i] = fmt.Sprintf("(*C.gsl_monte_function)(unsafe.Pointer(%s.CPtr()))",arg)
+				argExprs[i] = fmt.Sprintf("(*C.gsl_monte_function)(unsafe.Pointer(%s.CPtr()))", arg)
 			}
-			case GSL_REFERENCE: {				
+		case GSL_REFERENCE:
+			{
 				var refType string
 				AddImport("unsafe")
-				if strings.HasSuffix(cArgTypes[i],"*") {
-					refType = cArgTypes[i][0:len(cArgTypes[i])-1]
+				if strings.HasSuffix(cArgTypes[i], "*") {
+					refType = cArgTypes[i][0 : len(cArgTypes[i])-1]
 				} else {
 					refType = cArgTypes[i]
 				}
-				if _, has := global_CTYPES_TO_REF_TYPES[refType]; has {	
+				if _, has := global_CTYPES_TO_REF_TYPES[refType]; has {
 					cgoType, err := MapCTypeNameToCGo(refType)
 					if err != nil {
 						return "", err
 					}
 					argExprs[i] = fmt.Sprintf("(*%s)(unsafe.Pointer(%s.Ptr()))", cgoType, arg)
 				} else {
-					return "", errors.New("undefined reference type: '"+refType+"'")
+					return "", errors.New("undefined reference type: '" + refType + "'")
 				}
 			}
-			case OUTPTR: {
-				argExprs[i] = fmt.Sprintf("&_outptr_%d",i)
+		case OUTPTR:
+			{
+				argExprs[i] = fmt.Sprintf("&_outptr_%d", i)
 			}
-			case SLICEPTR: {
+		case SLICEPTR:
+			{
 				AddImport("reflect")
 				AddImport("unsafe")
 				cgoArgType, err := MapCTypeNameToCGo(cArgTypes[i])
@@ -988,7 +1045,8 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 				body.preCall = append(body.preCall, fmt.Sprintf("_slice_header_%d := (*reflect.SliceHeader)(unsafe.Pointer(&%s))", i, arg))
 				argExprs[i] = fmt.Sprintf("(%s)(unsafe.Pointer(_slice_header_%d.Data))", cgoArgType, i)
 			}
-			case SLICEARRAY: {
+		case SLICEARRAY:
+			{
 				AddImport("reflect")
 				AddImport("unsafe")
 				cgoArgType, err := MapCTypeNameToCGo(cArgTypes[i])
@@ -998,27 +1056,30 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 				body.preCall = append(body.preCall, fmt.Sprintf("_slice_header_%d := (*reflect.SliceHeader)(unsafe.Pointer(&%s))", i, arg))
 				argExprs[i] = fmt.Sprintf("(%s)(unsafe.Pointer(_slice_header_%d.Data))", cgoArgType, i)
 			}
-			// XXX - There is no way to manage file modes here, but in gsl uses of FILE* only ever write (fprintf pattern)
-			//       If stdout or similar is passed, there will be an illegal seek, which we happily ignore.
-			case FILE: {
+		// XXX - There is no way to manage file modes here, but in gsl uses of FILE* only ever write (fprintf pattern)
+		//       If stdout or similar is passed, there will be an illegal seek, which we happily ignore.
+		case FILE:
+			{
 				AddImport("unsafe")
 				AddImport("github.com/dtromb/gogsl")
 				body.preCall = append(body.preCall, fmt.Sprintf("_file_%d := C.fdopen(C.dup(C.int(%s.Fd())),(*C.char)(unsafe.Pointer(gogsl.APPEND_ONLY.Ptr())))", i, arg))
-				body.postCall = append(body.postCall, fmt.Sprintf("C.fclose(_file_%d)",i))
+				body.postCall = append(body.postCall, fmt.Sprintf("C.fclose(_file_%d)", i))
 				argExprs[i] = fmt.Sprintf("_file_%d", i)
 			}
-			case STRING: { 
+		case STRING:
+			{
 				AddImport("unsafe")
 				argExprs[i] = fmt.Sprintf("_string_%d", i)
 				body.preCall = append(body.preCall, fmt.Sprintf("%s := C.CString(%s)", argExprs[i], arg))
 				body.postCall = append(body.postCall, fmt.Sprintf("C.free(unsafe.Pointer(%s))", argExprs[i]))
 			}
-			default: {
+		default:
+			{
 				return "", errors.New("unknown type mapping strategy")
 			}
 		}
 	}
-	
+
 	// Create the C call expression
 	if len(cRetType) == 0 {
 		buf = append(buf, fmt.Sprintf("   %s()\n", callName)...)
@@ -1027,26 +1088,28 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 		if goRetType == "" {
 			tms = returnMapStrategies[0]
 		} else {
-			tms, err = GetTypeMapStrategy(cRetType[0],0) 
+			tms, err = GetTypeMapStrategy(cRetType[0], 0)
 			if err != nil {
 				return "", err
 			}
 		}
 		var callExprBuf []byte
-		callExprBuf = append(callExprBuf,fmt.Sprintf("%s(", callName)...)
+		callExprBuf = append(callExprBuf, fmt.Sprintf("%s(", callName)...)
 		for i, argExpr := range argExprs {
-			callExprBuf = append(callExprBuf,argExpr...)
-			if i < len(argExprs) - 1{
-				callExprBuf = append(callExprBuf,", "...)
+			callExprBuf = append(callExprBuf, argExpr...)
+			if i < len(argExprs)-1 {
+				callExprBuf = append(callExprBuf, ", "...)
 			}
 		}
-		callExprBuf = append(callExprBuf,")"...)
+		callExprBuf = append(callExprBuf, ")"...)
 		callExpr := string(callExprBuf)
-		switch(tms) {
-			case VALUE_CAST: {
-				callExpr = ValueCastExpression(goRetType, callExpr) 
+		switch tms {
+		case VALUE_CAST:
+			{
+				callExpr = ValueCastExpression(goRetType, callExpr)
 			}
-			case GSL_COMPLEX: {
+		case GSL_COMPLEX:
+			{
 				AddImport("github.com/dtromb/gogsl/complex")
 				if global_IS_COMPLEX_PACKAGE {
 					body.returnReplace = "GslComplexToGo(uintptr(unsafe.Pointer(&_result)))"
@@ -1054,7 +1117,8 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 					body.returnReplace = "complex_.GslComplexToGo(uintptr(unsafe.Pointer(&_result)))"
 				}
 			}
-			case GSL_COMPLEX_FLOAT: {
+		case GSL_COMPLEX_FLOAT:
+			{
 				AddImport("github.com/dtromb/gogsl/complex")
 				if global_IS_COMPLEX_PACKAGE {
 					body.returnReplace = "GslComplexFloatToGo(uintptr(unsafe.Pointer(&_result)))"
@@ -1062,60 +1126,69 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 					body.returnReplace = "complex_.GslComplexFloatToGo(uintptr(unsafe.Pointer(&_result)))"
 				}
 			}
-			case GSL_FUNCTION: {
+		case GSL_FUNCTION:
+			{
 				panic("gsl_function return type unsupported")
 			}
-			case GSL_FUNCTION_FDF: {
+		case GSL_FUNCTION_FDF:
+			{
 				panic("gsl_function_fdf return type unsupported")
 			}
-			case GSL_MONTE_FUNCTION: {
+		case GSL_MONTE_FUNCTION:
+			{
 				panic("gsl_monte_function return type unsupported")
 			}
-			case GSL_REFERENCE: {
-				if strings.HasSuffix(cRetType[0],"*") {
+		case GSL_REFERENCE:
+			{
+				if strings.HasSuffix(cRetType[0], "*") {
 					AddImport("github.com/dtromb/gogsl")
-					body.preCall = append(body.preCall,fmt.Sprintf("_ref := %s", callExpr))
-					body.preCall = append(body.preCall,fmt.Sprintf("_result := &%s{}", goRetType))
-					body.postCall = append(body.postCall,fmt.Sprintf("gogsl.InitializeGslReference(_result, uintptr(unsafe.Pointer(_ref)))"))
+					body.preCall = append(body.preCall, fmt.Sprintf("_ref := %s", callExpr))
+					body.preCall = append(body.preCall, fmt.Sprintf("_result := &%s{}", goRetType))
+					body.postCall = append(body.postCall, fmt.Sprintf("gogsl.InitializeGslReference(_result, uintptr(unsafe.Pointer(_ref)))"))
 					body.returnReplace = "_result"
 					body.suppressCall = true
 				} else {
-					fmt.Println(cRetType[0])					
+					fmt.Println(cRetType[0])
 					AddImport("github.com/dtromb/gogsl")
-					body.preCall = append(body.preCall,fmt.Sprintf("_ref := %s", callExpr))
-					body.preCall = append(body.preCall,fmt.Sprintf("_result := &%s{}", goRetType))
-					body.preCall = append(body.preCall,fmt.Sprintf("_result.CData = make([]byte, unsafe.Sizeof(_ref))"))
-					body.postCall = append(body.postCall,fmt.Sprintf("gogsl.InitializeGslStatic(_result, uintptr(unsafe.Pointer(&_ref)))"))
+					body.preCall = append(body.preCall, fmt.Sprintf("_ref := %s", callExpr))
+					body.preCall = append(body.preCall, fmt.Sprintf("_result := &%s{}", goRetType))
+					body.preCall = append(body.preCall, fmt.Sprintf("_result.CData = make([]byte, unsafe.Sizeof(_ref))"))
+					body.postCall = append(body.postCall, fmt.Sprintf("gogsl.InitializeGslStatic(_result, uintptr(unsafe.Pointer(&_ref)))"))
 					body.returnReplace = "_result"
 					body.suppressCall = true
 				}
 			}
-			case GSL_REFERENCE_DTOR: {
+		case GSL_REFERENCE_DTOR:
+			{
 				cgoRetType, err := MapCTypeNameToCGo(cArgTypes[0])
 				if err != nil {
 					return "", err
 				}
-				body.preCall = append(body.preCall,fmt.Sprintf("%s((%s)(unsafe.Pointer(x.Ptr())))", callName, cgoRetType))
+				body.preCall = append(body.preCall, fmt.Sprintf("%s((%s)(unsafe.Pointer(x.Ptr())))", callName, cgoRetType))
 				body.suppressCall = true
 			}
-			case VOID_RETURN: {
+		case VOID_RETURN:
+			{
 				break
 			}
-			case STRING: {
+		case STRING:
+			{
 				// We assume returned char* are not allocators and the library manages
-				// the memory pointed to!  If this is not the case somewhere, a different 
+				// the memory pointed to!  If this is not the case somewhere, a different
 				// map strategy needs to be implemented for those returns...
 				callExpr = fmt.Sprintf("C.GoString(%s)", callExpr)
 			}
-			case CPTR: {
+		case CPTR:
+			{
 				return "", errors.New("CPTR return type map strategy is unsupported")
 			}
-			default: {
+		default:
+			{
 				return "", errors.New("unknown return type map strategy ")
 			}
 		}
 		for _, pc := range body.preCall {
-			buf = append(buf, fmt.Sprintf("   %s\n",pc)...)
+			buf = append(buf, fmt.Sprintf("   %s\n", pc)...)
 		}
 		if !voidResult && len(body.postCall) == 0 && len(cRetType) == 1 && body.returnReplace == "" && !body.suppressCall {
 			buf = append(buf, fmt.Sprintf("   return %s\n", callExpr)...)
@@ -1129,7 +1202,7 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 				}
 			}
 			for _, pc := range body.postCall {
-				buf = append(buf, fmt.Sprintf("   %s\n",pc)...)
+				buf = append(buf, fmt.Sprintf("   %s\n", pc)...)
 			}
 			if body.returnReplace != "" {
 				if cRetType[0] != "void" {
@@ -1138,7 +1211,7 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 			} else {
 				if cRetType[0] != "void" || len(cRetType) > 1 {
 					buf = append(buf, "   return "...)
-					for i, crt := range(cRetType) {
+					for i, crt := range cRetType {
 						if i == 0 {
 							if voidResult {
 								continue
@@ -1146,11 +1219,13 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 							buf = append(buf, "_result"...)
 						} else {
 							rms := returnMapStrategies[i]
-							switch(rms) {
-								case VALUE_CAST: {
+							switch rms {
+							case VALUE_CAST:
+								{
 									return "", errors.New("value cast in return mapping with no value")
 								}
-								case OUTPTR: {
+							case OUTPTR:
+								{
 									gort, err := MapCTypeName(crt)
 									if err != nil {
 										return "", err
@@ -1161,7 +1236,8 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 									// complex128(_outptr_3)
 									// *(*complex128)(unsafe.Pointer(&_outptr_3))
 								}
-								default: {
+							default:
+								{
 									return "", errors.New("unknown return strategy")
 								}
 							}
@@ -1171,15 +1247,16 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 						}
 					}
 					buf = append(buf, "\n"...)
-				} 
+				}
 			}
 		}
 	}
-	buf = append(buf,"}\n\n"...)
-	return string(buf), nil 
+	buf = append(buf, "}\n\n"...)
+	return string(buf), nil
 }
 
 var global_ARG_MAP_STRATEGIES map[int]TypeMapStrategy = make(map[int]TypeMapStrategy)
+
 func SetMapStrategy(place int, strategy string) error {
 	tms, err := TypeMapStrategyFromString(strategy)
 	if err != nil {
@@ -1188,63 +1265,86 @@ func SetMapStrategy(place int, strategy string) error {
 	global_ARG_MAP_STRATEGIES[place] = tms
 	return nil
 }
+
 var global_ARG_MAP_TYPE_OVERRIDES map[int]string = make(map[int]string)
+
 func SetMapType(place int, typename string) error {
 	global_ARG_MAP_TYPE_OVERRIDES[place] = typename
 	return nil
 }
 
-
 func MapCTypeNameToCGo(name string) (string, error) {
-	switch (name) {
-		case "size_t": return "C.size_t", nil
-		case "char": return "C.char", nil
-		case "unsigned char": return "C.uchar", nil
-		case "short": return "C.short", nil
-		case "unsigned short": return "C.ushort", nil
-		case "int": return "C.int", nil
-		case "unsigned int": return "C.uint", nil
-		case "long": return "C.long", nil
-		case "unsigned long": return "C.ulong", nil
-		case "long long": return "C.longlong", nil
-		case "unsigned long long": return "C.ulonglong", nil
-		case "float": return "C.float", nil
-		case "double": return "C.double", nil
-		case "gsl_function": return "C.gsl_function", nil
-		case "gsl_monte_function": return "C.gsl_monte_function", nil
-		case "gsl_complex": return "C.gsl_complex", nil
-		case "gsl_complex_packed_ptr": return "*C.double", nil
-		case "gsl_complex_float": return "C.gsl_complex_float", nil
-		case "gsl_complex_float_packed_ptr": return "*C.float", nil
-		case "gsl_complex_packed_array": return "*C.double", nil
-		case "gsl_complex_float_packed_array": return "*C.float", nil
-		case "FILE": return "C.FILE", nil
+	switch name {
+	case "size_t":
+		return "C.size_t", nil
+	case "char":
+		return "C.char", nil
+	case "unsigned char":
+		return "C.uchar", nil
+	case "short":
+		return "C.short", nil
+	case "unsigned short":
+		return "C.ushort", nil
+	case "int":
+		return "C.int", nil
+	case "unsigned int":
+		return "C.uint", nil
+	case "long":
+		return "C.long", nil
+	case "unsigned long":
+		return "C.ulong", nil
+	case "long long":
+		return "C.longlong", nil
+	case "unsigned long long":
+		return "C.ulonglong", nil
+	case "float":
+		return "C.float", nil
+	case "double":
+		return "C.double", nil
+	case "gsl_function":
+		return "C.gsl_function", nil
+	case "gsl_monte_function":
+		return "C.gsl_monte_function", nil
+	case "gsl_complex":
+		return "C.gsl_complex", nil
+	case "gsl_complex_packed_ptr":
+		return "*C.double", nil
+	case "gsl_complex_float":
+		return "C.gsl_complex_float", nil
+	case "gsl_complex_float_packed_ptr":
+		return "*C.float", nil
+	case "gsl_complex_packed_array":
+		return "*C.double", nil
+	case "gsl_complex_float_packed_array":
+		return "*C.float", nil
+	case "FILE":
+		return "C.FILE", nil
 	}
 	if cgo, has := global_CTYPE_TO_CGOTYPE[name]; has {
 		return cgo, nil
 	}
 	if _, has := global_CTYPES_TO_REF_TYPES[name]; has {
-		return "C."+name, nil
+		return "C." + name, nil
 	}
 	if _, has := global_CTYPES_TO_ENUM_TYPES[name]; has {
-		return "C."+name, nil
+		return "C." + name, nil
 	}
-	if strings.HasSuffix(name,"*") {
-		mapName, err := MapCTypeNameToCGo(name[0:len(name)-1])
+	if strings.HasSuffix(name, "*") {
+		mapName, err := MapCTypeNameToCGo(name[0 : len(name)-1])
 		if err != nil {
 			return "?", err
 		}
-		return "*"+mapName, nil
+		return "*" + mapName, nil
 	}
-	if strings.HasSuffix(name,"[]") {
-		mapName, err := MapCTypeNameToCGo(name[0:len(name)-2])
+	if strings.HasSuffix(name, "[]") {
+		mapName, err := MapCTypeNameToCGo(name[0 : len(name)-2])
 		if err != nil {
 			return "?", err
 		}
 		// XXX - Deal with multi-dimensional arrays here.
-	 	return "*"+mapName, nil
+		return "*" + mapName, nil
 	}
-	return "?", errors.New("No mapping to CGo for C type '"+name+"'")
+	return "?", errors.New("No mapping to CGo for C type '" + name + "'")
 }
 
 func GetNumberType(signed bool, n int) (string, error) {
@@ -1256,28 +1356,32 @@ func GetNumberType(signed bool, n int) (string, error) {
 		return "int", nil
 	}
 	switch n {
-		case 8: {
+	case 8:
+		{
 			if signed {
 				return "int8", nil
 			} else {
 				return "byte", nil
 			}
 		}
-		case 16: {
+	case 16:
+		{
 			if signed {
 				return "int16", nil
 			} else {
 				return "uint16", nil
 			}
 		}
-		case 32: {
+	case 32:
+		{
 			if signed {
 				return "int32", nil
 			} else {
 				return "uint32", nil
 			}
 		}
-		case 64: {
+	case 64:
+		{
 			if signed {
 				return "int64", nil
 			} else {
@@ -1342,10 +1446,10 @@ func ExpandPrefixTemplate(template string) []string {
 		prefixName := global_TEMPLATE_STD_PREFIXES[i]
 		typeName := global_TEMPLATE_STD_PREFIXES[i+1]
 		goPrefixName := global_TEMPLATE_STD_PREFIXES[i+2]
-		expanded := strings.Replace(template,"$",prefixName,-1)
-		expanded = strings.Replace(expanded,"@",typeName,-1)
-		expanded = strings.Replace(expanded,"%",goPrefixName,-1)
-		newLines := strings.Split(expanded,"\n")
+		expanded := strings.Replace(template, "$", prefixName, -1)
+		expanded = strings.Replace(expanded, "@", typeName, -1)
+		expanded = strings.Replace(expanded, "%", goPrefixName, -1)
+		newLines := strings.Split(expanded, "\n")
 		var skipLine bool
 		for k, newLine := range newLines {
 			if skipLine {
@@ -1356,12 +1460,13 @@ func ExpandPrefixTemplate(template string) []string {
 			if newLine == "" {
 				continue
 			}
-			fmt.Println("TEMPLATE LINE: "+newLine)
+			fmt.Println("TEMPLATE LINE: " + newLine)
 			if newLine[0] == '#' {
 				mi, err := ParseMetainfo(newLine)
 				if err == nil {
-					switch(mi.key) {
-						case "TEMPLATE_EXCEPT": {
+					switch mi.key {
+					case "TEMPLATE_EXCEPT":
+						{
 							if len(mi.args) != 1 {
 								panic("#TEMPLATE_EXCEPT expects exactly one argument")
 							}
@@ -1371,13 +1476,13 @@ func ExpandPrefixTemplate(template string) []string {
 									skipLine = true
 									break
 								}
-							} 
+							}
 							continue
 						}
 					}
 				}
 			}
-			fmt.Println("TEMPLATE PRINT: "+expanded)
+			fmt.Println("TEMPLATE PRINT: " + expanded)
 			lines = append(lines, newLine)
 		}
 	}
@@ -1386,30 +1491,30 @@ func ExpandPrefixTemplate(template string) []string {
 	return lines
 }
 
-func ReadPrefixTemplate(lines []string) (string,int) {
+func ReadPrefixTemplate(lines []string) (string, int) {
 	var templateBuf []byte
 	for i, line := range lines {
-		line = strings.Trim(line," \t")
+		line = strings.Trim(line, " \t")
 		if line == "" {
 			continue
 		}
 		if line[0] == '#' {
-			mi, err := ParseMetainfo(line) 
+			mi, err := ParseMetainfo(line)
 			if err != nil {
-				panic("invalid metainfo in template: "+err.Error())
+				panic("invalid metainfo in template: " + err.Error())
 			}
 			if mi.key == "GSL_PREFIX_TEMPLATE_END" {
-				return string(templateBuf), (i+1)
+				return string(templateBuf), (i + 1)
 			}
 		}
-		templateBuf = append(templateBuf,(line+"\n")...)
+		templateBuf = append(templateBuf, (line + "\n")...)
 	}
 	panic("no #GSL_PREFIX_TEMPLATE_END at end of template")
 }
 
 func main() {
-	
-	// Introspect the machine and find the correct mappings for the C int, long, and long long 
+
+	// Introspect the machine and find the correct mappings for the C int, long, and long long
 	// types.
 	var err error
 	cSizeTSize := GetCSizeTSize()
@@ -1417,14 +1522,14 @@ func main() {
 	cIntSize := GetCIntSize()
 	cLongSize := GetCLongSize()
 	cLongLongSize := GetCLongLongSize()
-	
+
 	if cShortSize == 16 {
 		global_C16_TYPE = "short"
 	} else if cIntSize == 16 {
 		global_C16_TYPE = "int"
 	} else {
 		global_C16_TYPE = "int16_t"
-	}	
+	}
 	if cIntSize == 32 {
 		global_C32_TYPE = "int"
 	} else if cShortSize == 32 {
@@ -1433,7 +1538,7 @@ func main() {
 		global_C32_TYPE = "long"
 	} else {
 		global_C64_TYPE = "int32_t"
-	}	
+	}
 	if cIntSize == 64 {
 		global_C64_TYPE = "int"
 	} else if cLongSize == 64 {
@@ -1443,57 +1548,57 @@ func main() {
 	} else {
 		global_C64_TYPE = "int64_t"
 	}
-	
+
 	if global_SIZE_T_TYPE, err = GetNumberType(false, cSizeTSize); err != nil {
-		panic("Cannot map C size_t: "+err.Error())
+		panic("Cannot map C size_t: " + err.Error())
 	}
-	
+
 	if global_INT_TYPE, err = GetNumberType(true, cIntSize); err != nil {
-		panic("Cannot map C int: "+err.Error())
+		panic("Cannot map C int: " + err.Error())
 	}
 	if global_UINT_TYPE, err = GetNumberType(false, cIntSize); err != nil {
-		panic("Cannot map C unsigned int: "+err.Error())
-	}	
+		panic("Cannot map C unsigned int: " + err.Error())
+	}
 	if global_SHORT_TYPE, err = GetNumberType(true, cShortSize); err != nil {
-		panic("Cannot map C short: "+err.Error())
+		panic("Cannot map C short: " + err.Error())
 	}
 	if global_USHORT_TYPE, err = GetNumberType(false, cShortSize); err != nil {
-		panic("Cannot map C unsigned short: "+err.Error())
+		panic("Cannot map C unsigned short: " + err.Error())
 	}
 	if global_LONG_TYPE, err = GetNumberType(true, cLongSize); err != nil {
-		panic("Cannot map C long: "+err.Error())
+		panic("Cannot map C long: " + err.Error())
 	}
 	if global_ULONG_TYPE, err = GetNumberType(false, cLongSize); err != nil {
-		panic("Cannot map C unsigned long: "+err.Error())
-	}	
+		panic("Cannot map C unsigned long: " + err.Error())
+	}
 	if global_LONG_LONG_TYPE, err = GetNumberType(true, cLongLongSize); err != nil {
-		panic("Cannot map C long long: "+err.Error())
+		panic("Cannot map C long long: " + err.Error())
 	}
 	if global_ULONG_LONG_TYPE, err = GetNumberType(false, cLongLongSize); err != nil {
-		panic("Cannot map C unsigned long long: "+err.Error())
+		panic("Cannot map C unsigned long long: " + err.Error())
 	}
-	
+
 	var insideTemplate bool
 	var templateLines []string
 	var templatePosition int
-	
+
 	path, _ := osext.ExecutableFolder()
-	global_PACKAGE_BASE_PATH = path+"../../../../"
-	flistBytes, err := ioutil.ReadFile(path+"/../function-list")
+	global_PACKAGE_BASE_PATH = path + "../../../../"
+	flistBytes, err := ioutil.ReadFile(path + "/../function-list")
 	flist := string(flistBytes)
 	if err != nil {
 		panic("Could not read function manifest")
 	}
-	lines := strings.Split(flist,"\n")
+	lines := strings.Split(flist, "\n")
 	var postImport bool
 	//for lineNo, line := range lines {
 	var lineNo int
 	var line string
 	for lineNo < len(lines) || insideTemplate {
-		
+
 		// Read current line, template aware.
 		if insideTemplate {
-			fmt.Printf("TEMPLATE: %d/%d\n",templatePosition,len(templateLines))
+			fmt.Printf("TEMPLATE: %d/%d\n", templatePosition, len(templateLines))
 			if templatePosition >= len(templateLines) {
 				insideTemplate = false
 				fmt.Println("Finished template.")
@@ -1505,9 +1610,9 @@ func main() {
 			line = lines[lineNo]
 			lineNo += 1
 		}
-		
-		line = strings.Trim(line," \n\t")
-		if strings.HasPrefix(line,"//") {
+
+		line = strings.Trim(line, " \n\t")
+		if strings.HasPrefix(line, "//") {
 			continue
 		}
 		fmt.Printf("LINE: %d/%d %s\n", lineNo, len(lines), line)
@@ -1517,19 +1622,21 @@ func main() {
 		}
 		if line[0] == '#' {
 			// Process metadata instruction
-			md, err  := ParseMetainfo(line)
+			md, err := ParseMetainfo(line)
 			if err != nil {
 				panic(err)
 			}
-			switch(md.key) {
-				case "SECTION": {
+			switch md.key {
+			case "SECTION":
+				{
 					// # SECTION{"Vectors and Matricies"}
 					if len(md.args) != 1 || len(md.args[0]) != 1 {
 						panic("#SECTION expects exactly one argument")
 					}
 					StartSection(md.args[0][0])
 				}
-				case "PACKAGE": {
+			case "PACKAGE":
+				{
 					// # PACKAGE{"gogsl.block", ["gsl_block.h"], ["gsl_block_"]}
 					if len(md.args) != 3 {
 						fmt.Printf("%d\n", len(md.args))
@@ -1537,7 +1644,8 @@ func main() {
 					}
 					StartPackage(md.args[0][0], md.args[1], md.args[2])
 				}
-				case "IMPORT": {
+			case "IMPORT":
+				{
 					if len(md.args) != 1 {
 						panic("#IMPORT expects exactly one argument")
 					}
@@ -1546,7 +1654,8 @@ func main() {
 					}
 					postImport = true
 				}
-				case "NEXTMAP": {
+			case "NEXTMAP":
+				{
 					// # NEXTMAP{"2","OUTPTR"}
 					if len(md.args) != 2 || len(md.args[0]) != 1 || len(md.args[1]) != 1 {
 						panic("#NEXTMAP expects exactly two string arguments")
@@ -1561,7 +1670,8 @@ func main() {
 					}
 					continue
 				}
-				case "NEXTTYPE": {
+			case "NEXTTYPE":
+				{
 					if len(md.args) != 2 || len(md.args[0]) != 1 || len(md.args[1]) != 1 {
 						panic("#NEXTTYPE expects exactly two string arguments")
 					}
@@ -1575,25 +1685,29 @@ func main() {
 					}
 					continue
 				}
-				case "GSL_REFTYPE": {
+			case "GSL_REFTYPE":
+				{
 					if len(md.args) != 2 || len(md.args[0]) != 1 {
 						panic("#GSL_REFTYPE expects two arguments with the first a single typename")
 					}
 					GslReferenceType(md.args[0][0], md.args[1])
 				}
-				case "GSL_ENUM": {
+			case "GSL_ENUM":
+				{
 					if len(md.args) != 1 || len(md.args[0]) != 1 {
 						panic("#GSL_ENUM expects exactly one string argument")
 					}
 					GslEnumType(md.args[0][0])
 				}
-				case "NAME": {
+			case "NAME":
+				{
 					if len(md.args) != 1 || len(md.args[0]) != 1 {
 						panic("#NAME expects exactly one string argument")
 					}
 					GslName(md.args[0][0])
 				}
-				case "GSL_PREFIX_TEMPLATE_START": {
+			case "GSL_PREFIX_TEMPLATE_START":
+				{
 					fmt.Println("Processing template...")
 					if len(md.args) != 0 {
 						if len(md.args) != 2 {
@@ -1615,15 +1729,18 @@ func main() {
 					fmt.Println("Expanding template...")
 					fmt.Printf("%d lines -> %d lines\n", n, len(templateLines))
 				}
-				case "GSL_PREFIX_TEMPLATE_END": {
+			case "GSL_PREFIX_TEMPLATE_END":
+				{
 					panic("unexpected #GSL_PREFIX_TEMPLATE_END")
 				}
-				case "TEMPLATE_EXCEPT": {
+			case "TEMPLATE_EXCEPT":
+				{
 					panic("unexpected #TEMPLATE_EXCEPT")
 				}
-				case "TYPEMAP": {
+			case "TYPEMAP":
+				{
 					if len(md.args) < 3 || len(md.args) > 4 || len(md.args[0]) != 1 ||
-					   len(md.args[1]) != 1 || len(md.args[2]) != 1 {
+						len(md.args[1]) != 1 || len(md.args[2]) != 1 {
 						panic("#TYPEMAP expects three or four string arguments")
 					}
 					if len(md.args) == 3 {
@@ -1635,52 +1752,53 @@ func main() {
 						}
 					}
 				}
-				default: {
-					panic("unknown metadata instruction '"+md.key+"'")
+			default:
+				{
+					panic("unknown metadata instruction '" + md.key + "'")
 				}
 			}
 			continue
 		}
-		
+
 		// Parse a function for translation.
 		if postImport {
 			global_OUTPUT.Write([]byte("\n"))
 			postImport = false
 		}
-		toks := FUNCTION_TOK_RE.FindAllString(line,-1)
-		var argStart int 
+		toks := FUNCTION_TOK_RE.FindAllString(line, -1)
+		var argStart int
 		for i := 0; i < len(toks); i++ {
 			if toks[i] == "(" {
-				argStart = i+1
+				argStart = i + 1
 				break
 			}
 		}
 		if argStart == 1 || toks[len(toks)-1] != ")" {
-			panic("invalid function line: "+line)
+			panic("invalid function line: " + line)
 		}
 		argParts := toks[argStart:len(toks)]
 		namePart := toks[argStart-2]
-		rtypeParts := toks[0:argStart-2]
+		rtypeParts := toks[0 : argStart-2]
 		returnType, err := TypeFromTypeParts(rtypeParts)
 		if err != nil {
-			panic("invalid return type in decl '"+line+"': "+err.Error())
+			panic("invalid return type in decl '" + line + "': " + err.Error())
 		}
 		//fmt.Printf("function %s \n   returns %s\n", namePart, returnType)
 		var argSubs [][]string
 		var spos int
 		for i, ap := range argParts {
-			ap = strings.Trim(ap," \t")
+			ap = strings.Trim(ap, " \t")
 			if ap == "," || ap == ")" {
 				argSlice := argParts[spos:i]
-				spos = i+1
-				argSubs = append(argSubs,argSlice)
+				spos = i + 1
+				argSubs = append(argSubs, argSlice)
 			}
 		}
 		args := make([]string, len(argSubs))
 		argNames := make([]string, len(argSubs))
 		for i, sub := range argSubs {
 			if len(sub) == 0 {
-				if (len(argSubs) != 1) {
+				if len(argSubs) != 1 {
 					panic(fmt.Sprintf("empty arg decl with multiple args"))
 				}
 				args = []string{}
@@ -1688,7 +1806,7 @@ func main() {
 				break
 			}
 			if len(sub) < 2 {
-				panic("invalid arg decl '"+strings.Join(sub," ")+"' in function decl: "+line)
+				panic("invalid arg decl '" + strings.Join(sub, " ") + "' in function decl: " + line)
 			}
 			var argSuffixCount int
 			var arrayType bool
@@ -1699,33 +1817,33 @@ func main() {
 				argSuffixCount = 1
 			}
 			argNames[i] = sub[len(sub)-argSuffixCount]
-			args[i], err = TypeFromTypeParts(sub[0:len(sub)-argSuffixCount])
+			args[i], err = TypeFromTypeParts(sub[0 : len(sub)-argSuffixCount])
 			if err != nil {
-				panic("invalid arg type in decl '"+strings.Join(sub," ")+"' in function decl: "+line+":"+err.Error())
+				panic("invalid arg type in decl '" + strings.Join(sub, " ") + "' in function decl: " + line + ":" + err.Error())
 			}
 			if arrayType {
-				args[i] = args[i]+"[]"
+				args[i] = args[i] + "[]"
 			}
 		}
 		/*
-		fmt.Printf("   args ")
-		for i, arg := range args {
-			fmt.Printf("%s %s", arg, argNames[i]) 
-			if i < len(args)-1 {
-				fmt.Printf(", ")
+			fmt.Printf("   args ")
+			for i, arg := range args {
+				fmt.Printf("%s %s", arg, argNames[i])
+				if i < len(args)-1 {
+					fmt.Printf(", ")
+				}
 			}
-		}
-		fmt.Println()
+			fmt.Println()
 		*/
 		body, err := ConstructFunctionWrapper(namePart, []string{returnType}, args, argNames)
 		if err != nil {
-			panic("Could not construct function wrapper for '"+namePart+"': "+err.Error())
+			panic("Could not construct function wrapper for '" + namePart + "': " + err.Error())
 		}
 		global_OUTPUT.Write([]byte(body))
 		fmt.Println(body)
-		
+
 		// Reset mapping strategies.
-		global_ARG_MAP_STRATEGIES =  make(map[int]TypeMapStrategy)
+		global_ARG_MAP_STRATEGIES = make(map[int]TypeMapStrategy)
 		global_ARG_MAP_TYPE_OVERRIDES = make(map[int]string)
 	}
 	FinishPackage()
@@ -1737,28 +1855,32 @@ func TypeFromTypeParts(parts []string) (string, error) {
 	//fmt.Println("PARSE TYPE")
 	for _, rtp := range parts {
 		rtp = strings.Trim(rtp, " \t")
-		switch(rtp) { 
-			case "const": {
+		switch rtp {
+		case "const":
+			{
 				continue
 			}
-			case "unsigned": {
-				typestr = append(typestr,"unsigned "...)
+		case "unsigned":
+			{
+				typestr = append(typestr, "unsigned "...)
 			}
-			case "*": {
+		case "*":
+			{
 				typestr = append(typestr, "*"...)
-			 	if !haveName {
-					return "?",errors.New("invalid type (* before type name)")
+				if !haveName {
+					return "?", errors.New("invalid type (* before type name)")
 				}
 			}
-			default: {
+		default:
+			{
 				if haveName {
-					return "?",errors.New("invalid type (two type names) (last typstr="+rtp+")")
+					return "?", errors.New("invalid type (two type names) (last typstr=" + rtp + ")")
 				}
 				haveName = true
 				//fmt.Println("NAME: "+rtp)
-				typestr = append(typestr,rtp...)
+				typestr = append(typestr, rtp...)
 			}
-		}	
+		}
 	}
-	return string(typestr),nil
+	return string(typestr), nil
 }
