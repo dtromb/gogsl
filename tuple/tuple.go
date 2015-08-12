@@ -6,5 +6,3 @@ package tuple
    #include <gsl/gsl_tuple.h>
 */
 import "C"
-
-

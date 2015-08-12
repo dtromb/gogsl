@@ -19,7 +19,7 @@ To use the **gogsl** bindings in your program, you'll need to do the following:
 
 * Generate the bindings:
                 
-                cd dtromb/gogsl/generator; go build .; ./generator
+                cd dtromb/gogsl; go generate
 
 
     This step is necessary because the datatype sizes on various machines will differ, and the bindings need to be generated based on these. This necessarily means code will not be portable across architectures (the alternative would have been to use per-binding size-matched types, however Go would then require explicit casts when these were used!)

@@ -1,4 +1,4 @@
-package gogsl 
+package gogsl
 
 /*
 	#include <string.h>
@@ -26,7 +26,7 @@ type ReferenceList struct {
 }
 
 type GslReference struct {
-	x uintptr
+	x    uintptr
 	rgrp *ReferenceList
 }
 
@@ -38,7 +38,7 @@ type CStaticReference interface {
 func GslReferenceFinalizer(ref CReference) {
 	//fmt.Println("FINALIZER")
 	gslRef := reflect.ValueOf(ref).Elem().FieldByName("GslReference").Addr().Interface().(*GslReference)
-	if (gslRef.x != 0) {
+	if gslRef.x != 0 {
 		rgrp := gslRef.rgrp
 		if rgrp == nil {
 			ref.Dispose()

@@ -6,5 +6,3 @@ package simann
    #include <gsl/gsl_simann.h>
 */
 import "C"
-
-

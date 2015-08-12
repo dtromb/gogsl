@@ -2,8 +2,8 @@ package test
 
 import (
 	"fmt"
-	"testing"
 	"github.com/dtromb/gogsl/rng"
+	"testing"
 )
 
 func TestRng(t *testing.T) {
@@ -12,9 +12,8 @@ func TestRng(t *testing.T) {
 	T := rng.DefaultRngType()
 	r := rng.RngAlloc(T)
 	for i := 0; i < n; i++ {
-      u := rng.Uniform(r)
-      fmt.Printf("%.5f\n", u);
+		u := rng.Uniform(r)
+		fmt.Printf("%.5f\n", u)
 	}
 	fmt.Println()
 }
-
