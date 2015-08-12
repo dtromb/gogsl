@@ -1,8 +1,8 @@
 //////////        AUTOMATICALLY GENERATED CODE - DO NOT EDIT        //////////
-package simann
+package tuple
 
 /*
    #cgo pkg-config: --define-variable=prefix=. gsl
-   #include <gsl/gsl_simann.h>
+   #include <gsl/gsl_tuple.h>
 */
 import "C"

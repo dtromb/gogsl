@@ -2,9 +2,9 @@ package test
 
 import (
 	"fmt"
-	"testing"
 	"github.com/dtromb/gogsl/randist"
 	"github.com/dtromb/gogsl/rng"
+	"testing"
 )
 
 func TestRandist(t *testing.T) {
@@ -14,9 +14,8 @@ func TestRandist(t *testing.T) {
 	T := rng.DefaultRngType()
 	r := rng.RngAlloc(T)
 	for i := 0; i < n; i++ {
-		k := randist.Poisson(r,mu)
+		k := randist.Poisson(r, mu)
 		fmt.Printf(" %d", k)
 	}
 	fmt.Println()
 }
-

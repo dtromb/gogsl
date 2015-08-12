@@ -2,9 +2,9 @@ package gogsl
 
 /*
 	#include <gsl/gsl_errno.h>
-	
+
 	extern void *get_go_gsl_error_handler_ptr();
-	
+
 */
 import "C"
 
@@ -18,5 +18,5 @@ func invokeGoGslErrorHandler(cReason uintptr, cFile uintptr, line int, gsl_errno
 	if handler != nil {
 		handler.Handler(reason, file, line, GslError(gsl_errno))
 	}
-	
+
 }

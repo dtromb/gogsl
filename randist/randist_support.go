@@ -7,10 +7,10 @@ package randist
 import "C"
 
 import (
-	"reflect"
-	"unsafe"
 	"github.com/dtromb/gogsl"
 	"github.com/dtromb/gogsl/rng"
+	"reflect"
+	"unsafe"
 )
 
 func Shuffle(rng *rng.GslRng, data interface{}, n int) {
@@ -33,10 +33,10 @@ func Shuffle(rng *rng.GslRng, data interface{}, n int) {
 	}
 	elementLen := baseType.Size()
 	addr := dataVal.Index(0).UnsafeAddr()
-	
+
 	//hdr := (*reflect.SliceHeader)(unsafe.Pointer(addr))
 	//void gsl_ran_shuffle (const gsl_rng * r, void * base, size_t n, size_t size)
-	C.gsl_ran_shuffle((*C.gsl_rng)(unsafe.Pointer(rng.Ptr())), 
-	                  unsafe.Pointer(addr),
-					  C.size_t(n), C.size_t(elementLen))
+	C.gsl_ran_shuffle((*C.gsl_rng)(unsafe.Pointer(rng.Ptr())),
+		unsafe.Pointer(addr),
+		C.size_t(n), C.size_t(elementLen))
 }

@@ -1,8 +1,8 @@
 package gogsl
 
-/*	
+/*
 	#include <stdlib.h>
-	
+
 	int get_c_size_t_size() {
 	int c;
 	size_t k;
@@ -13,7 +13,7 @@ package gogsl
 		}
 		return c;
 	}
-	
+
 	int get_c_short_size() {
 	int c;
 	unsigned short k;
@@ -24,7 +24,7 @@ package gogsl
 		}
 		return c;
 	}
-		
+
 	int get_c_int_size() {
 	int c;
 	unsigned int k;
@@ -35,7 +35,7 @@ package gogsl
 		}
 		return c;
 	}
-	
+
 	int get_c_long_size() {
 	int c;
 	unsigned long k;
@@ -46,7 +46,7 @@ package gogsl
 		}
 		return c;
 	}
-	
+
 	int get_c_long_long_size() {
 	int c;
 	unsigned long long k;
@@ -87,28 +87,28 @@ func init() {
 	//fmt.Printf("go uintptr: %d\n", GetUintptrSize())
 	if GOGSL_SIZE_T_TYPE, err = GetNumberType(false, GetCSizeTSize()); err != nil {
 		panic(err.Error())
-	}	
+	}
 	if GOGSL_INT_TYPE, err = GetNumberType(true, GetCIntSize()); err != nil {
 		panic(err.Error())
-	}	
+	}
 	if GOGSL_UINT_TYPE, err = GetNumberType(false, GetCIntSize()); err != nil {
 		panic(err.Error())
-	}	
+	}
 	if GOGSL_SHORT_TYPE, err = GetNumberType(true, GetCShortSize()); err != nil {
 		panic(err.Error())
-	}	
+	}
 	if GOGSL_USHORT_TYPE, err = GetNumberType(false, GetCShortSize()); err != nil {
 		panic(err.Error())
-	}	
+	}
 	if GOGSL_LONG_TYPE, err = GetNumberType(true, GetCLongSize()); err != nil {
 		panic(err.Error())
-	}	
+	}
 	if GOGSL_ULONG_TYPE, err = GetNumberType(false, GetCLongSize()); err != nil {
 		panic(err.Error())
-	}	
+	}
 	if GOGSL_LONG_LONG_TYPE, err = GetNumberType(false, GetCLongLongSize()); err != nil {
 		panic(err.Error())
-	}	
+	}
 	if GOGSL_ULONG_LONG_TYPE, err = GetNumberType(false, GetCLongLongSize()); err != nil {
 		panic(err.Error())
 	}
@@ -163,28 +163,32 @@ func GetNumberType(signed bool, n int) (reflect.Type, error) {
 		return reflect.TypeOf([]int{}).Elem(), nil
 	}
 	switch n {
-		case 8: {
+	case 8:
+		{
 			if signed {
 				return reflect.TypeOf([]int8{}).Elem(), nil
 			} else {
 				return reflect.TypeOf([]byte{}).Elem(), nil
 			}
 		}
-		case 16: {
+	case 16:
+		{
 			if signed {
 				return reflect.TypeOf([]int16{}).Elem(), nil
 			} else {
 				return reflect.TypeOf([]uint16{}).Elem(), nil
 			}
 		}
-		case 32: {
+	case 32:
+		{
 			if signed {
 				return reflect.TypeOf([]int32{}).Elem(), nil
 			} else {
 				return reflect.TypeOf([]uint32{}).Elem(), nil
 			}
 		}
-		case 64: {
+	case 64:
+		{
 			if signed {
 				return reflect.TypeOf([]int64{}).Elem(), nil
 			} else {
