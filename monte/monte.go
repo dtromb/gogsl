@@ -45,10 +45,9 @@ func PlainInit(s *GslMontePlainState) int32 {
 	return int32(C.gsl_monte_plain_init((*C.gsl_monte_plain_state)(unsafe.Pointer(s.Ptr()))))
 }
 
-func PlainIntegrate(f *gogsl.GslMonteFunction, xl []float64, xu []float64, dim int, calls int, r *rng.GslRng, s *GslMontePlainState) (int32, float64, float64) {
+func PlainIntegrate(f *GslMonteFunction, xl []float64, xu []float64, dim int, calls int, r *rng.GslRng, s *GslMontePlainState) (int32, float64, float64) {
 	var _outptr_7 C.double
 	var _outptr_8 C.double
-	gogsl.InitializeGslMonteFunction(f)
 	_slice_header_1 := (*reflect.SliceHeader)(unsafe.Pointer(&xl))
 	_slice_header_2 := (*reflect.SliceHeader)(unsafe.Pointer(&xu))
 	_result := int32(C.gsl_monte_plain_integrate((*C.gsl_monte_function)(unsafe.Pointer(f.CPtr())), (*C.double)(unsafe.Pointer(_slice_header_1.Data)), (*C.double)(unsafe.Pointer(_slice_header_2.Data)), C.size_t(dim), C.size_t(calls), (*C.gsl_rng)(unsafe.Pointer(r.Ptr())), (*C.gsl_monte_plain_state)(unsafe.Pointer(s.Ptr())), &_outptr_7, &_outptr_8))
@@ -70,10 +69,9 @@ func MiserInit(s *GslMonteMiserState) int32 {
 	return int32(C.gsl_monte_miser_init((*C.gsl_monte_miser_state)(unsafe.Pointer(s.Ptr()))))
 }
 
-func MiserIntegrate(f *gogsl.GslMonteFunction, xl []float64, xu []float64, dim int, calls int, r *rng.GslRng, s *GslMonteMiserState) (int32, float64, float64) {
+func MiserIntegrate(f *GslMonteFunction, xl []float64, xu []float64, dim int, calls int, r *rng.GslRng, s *GslMonteMiserState) (int32, float64, float64) {
 	var _outptr_7 C.double
 	var _outptr_8 C.double
-	gogsl.InitializeGslMonteFunction(f)
 	_slice_header_1 := (*reflect.SliceHeader)(unsafe.Pointer(&xl))
 	_slice_header_2 := (*reflect.SliceHeader)(unsafe.Pointer(&xu))
 	_result := int32(C.gsl_monte_miser_integrate((*C.gsl_monte_function)(unsafe.Pointer(f.CPtr())), (*C.double)(unsafe.Pointer(_slice_header_1.Data)), (*C.double)(unsafe.Pointer(_slice_header_2.Data)), C.size_t(dim), C.size_t(calls), (*C.gsl_rng)(unsafe.Pointer(r.Ptr())), (*C.gsl_monte_miser_state)(unsafe.Pointer(s.Ptr())), &_outptr_7, &_outptr_8))
@@ -103,10 +101,9 @@ func VegasInit(s *GslMonteVegasState) int32 {
 	return int32(C.gsl_monte_vegas_init((*C.gsl_monte_vegas_state)(unsafe.Pointer(s.Ptr()))))
 }
 
-func VegasIntegrate(f *gogsl.GslMonteFunction, xl []float64, xu []float64, dim int, calls int, r *rng.GslRng, s *GslMonteVegasState) (int32, float64, float64) {
+func VegasIntegrate(f *GslMonteFunction, xl []float64, xu []float64, dim int, calls int, r *rng.GslRng, s *GslMonteVegasState) (int32, float64, float64) {
 	var _outptr_7 C.double
 	var _outptr_8 C.double
-	gogsl.InitializeGslMonteFunction(f)
 	_slice_header_1 := (*reflect.SliceHeader)(unsafe.Pointer(&xl))
 	_slice_header_2 := (*reflect.SliceHeader)(unsafe.Pointer(&xu))
 	_result := int32(C.gsl_monte_vegas_integrate((*C.gsl_monte_function)(unsafe.Pointer(f.CPtr())), (*C.double)(unsafe.Pointer(_slice_header_1.Data)), (*C.double)(unsafe.Pointer(_slice_header_2.Data)), C.size_t(dim), C.size_t(calls), (*C.gsl_rng)(unsafe.Pointer(r.Ptr())), (*C.gsl_monte_vegas_state)(unsafe.Pointer(s.Ptr())), &_outptr_7, &_outptr_8))

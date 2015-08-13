@@ -2,7 +2,7 @@ package gogsl
 
 /*
 
-*/
+ */
 import "C"
 
 import (

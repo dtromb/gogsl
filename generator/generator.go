@@ -129,8 +129,6 @@ func TypeMapStrategyFromString(name string) (TypeMapStrategy, error) {
 		return GSL_FUNCTION, nil
 	case "gsl_function_fdf":
 		return GSL_FUNCTION_FDF, nil
-	case "gsl_monte_function":
-		return GSL_MONTE_FUNCTION, nil
 	case "sliceptr":
 		return SLICEPTR, nil
 	case "slicearray":
@@ -361,8 +359,6 @@ func StartPackage(name string, includes []string, prefixes []string) {
 	global_CTYPE_TO_GOTYPE["gsl_function*"] = "*GslFunction"
 	global_CTYPE_TO_GOTYPE["gsl_function_fdf"] = "*GslFunctionFdf"
 	global_CTYPE_TO_GOTYPE["gsl_function_fdf*"] = "*GslFunctionFdf"
-	global_CTYPE_TO_GOTYPE["gsl_monte_function"] = "*GslMonteFunction"
-	global_CTYPE_TO_GOTYPE["gsl_monte_function*"] = "*GslMonteFunction"
 	// XXX - Need to introspect machine to valid the above two types!
 	global_CTYPE_TO_GOTYPE["FILE"] = "os.File"
 	// Invert the type map
@@ -507,10 +503,6 @@ func GetTypeMapStrategy(cType string, place int) (TypeMapStrategy, error) {
 		return GSL_FUNCTION_FDF, nil
 	case "gsl_function_fdf*":
 		return GSL_FUNCTION_FDF, nil
-	case "gsl_monte_function":
-		return GSL_MONTE_FUNCTION, nil
-	case "gsl_monte_function*":
-		return GSL_MONTE_FUNCTION, nil
 	case "void":
 		return VOID_RETURN, nil
 	}
@@ -1008,13 +1000,6 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 				body.preCall = append(body.preCall, fmt.Sprintf("%s(%s)", fInit, arg))
 				argExprs[i] = fmt.Sprintf("(*C.gsl_function_fdf)(unsafe.Pointer(%s.CPtr()))", arg)
 			}
-		case GSL_MONTE_FUNCTION:
-			{
-				AddImport("unsafe")
-				fInit := QualifyPackage("github.com/dtromb/gogsl", "InitializeGslMonteFunction")
-				body.preCall = append(body.preCall, fmt.Sprintf("%s(%s)", fInit, arg))
-				argExprs[i] = fmt.Sprintf("(*C.gsl_monte_function)(unsafe.Pointer(%s.CPtr()))", arg)
-			}
 		case GSL_REFERENCE:
 			{
 				var refType string
@@ -1137,10 +1122,6 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 		case GSL_FUNCTION_FDF:
 			{
 				panic("gsl_function_fdf return type unsupported")
-			}
-		case GSL_MONTE_FUNCTION:
-			{
-				panic("gsl_monte_function return type unsupported")
 			}
 		case GSL_REFERENCE:
 			{
@@ -1307,8 +1288,6 @@ func MapCTypeNameToCGo(name string) (string, error) {
 		return "C.double", nil
 	case "gsl_function":
 		return "C.gsl_function", nil
-	case "gsl_monte_function":
-		return "C.gsl_monte_function", nil
 	case "gsl_complex":
 		return "C.gsl_complex", nil
 	case "gsl_complex_packed_ptr":

@@ -1999,6 +1999,7 @@ int gsl_histogram2d_pdf_sample (const gsl_histogram2d_pdf * p, double r1, double
 
 # SECTION{"Monte Carlo Integration"}
 # PACKAGE{"github.com/dtromb/gogsl/monte", ["gsl/gsl_monte_plain.h","gsl/gsl_monte_miser.h","gsl/gsl_monte_vegas.h"],["gsl_monte"]}
+# TYPEMAP{"gsl_monte_function*","*GslMonteFunction","*C.gsl_monte_function","CPTR"}
 # GSL_REFTYPE{"gsl_monte_plain_state",[]}
 # GSL_REFTYPE{"gsl_monte_miser_state",[]}
 # GSL_REFTYPE{"gsl_monte_miser_params",[]}
