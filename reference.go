@@ -98,7 +98,9 @@ func gslReference(ref CReference, ptr uintptr, finalize bool) error {
 	}
 	gslRef.x = ptr
 	//fmt.Printf("GSL REF PTR: %x\n", uintptr(unsafe.Pointer(gslRef)))
-	runtime.SetFinalizer(ifVal.Addr().Interface().(CReference), GslReferenceFinalizer)
+	if finalize {
+		runtime.SetFinalizer(ifVal.Addr().Interface().(CReference), GslReferenceFinalizer)
+	}
 	return nil
 }
 
