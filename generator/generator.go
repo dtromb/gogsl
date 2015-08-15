@@ -102,6 +102,7 @@ const (
 	GSL_FUNCTION
 	GSL_FUNCTION_FDF
 	GSL_MONTE_FUNCTION
+	PTR
 	OUTPTR
 	SLICEPTR
 	SLICEARRAY
@@ -115,6 +116,8 @@ func TypeMapStrategyFromString(name string) (TypeMapStrategy, error) {
 	switch strings.ToLower(name) {
 	case "value_cast":
 		return VALUE_CAST, nil
+	case "ptr":
+		return PTR, nil
 	case "outptr":
 		return OUTPTR, nil
 	case "gsl_complex":
@@ -782,6 +785,25 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 					return "", errors.New("undefined reference type: '" + refType + "'")
 				}
 			}
+		case PTR:
+			{
+				if !strings.HasSuffix(cArgTypes[i], "*") {
+					return "", errors.New("PTR target type must be a pointer")
+				}
+				baseCType := cArgTypes[i][0 : len(cArgTypes[i])-1]
+				goArgType, err := MapCTypeName(baseCType)
+				if err != nil {
+					return "", err
+				}
+				// XXX - Should be no need to do reference checks here, we'll never
+				// pass an exported enum or ref type to a foreign function by value (I hope).
+				goArgType = "*" + goArgType
+				goArgTypes = append(goArgTypes, goArgType)
+				buf = append(buf, fmt.Sprintf("%s %s", arg, goArgType)...)
+				if i < len(cArgNames)-1 {
+					buf = append(buf, ", "...)
+				}
+			}
 		case OUTPTR:
 			{
 				AddImport("unsafe")
@@ -1018,6 +1040,21 @@ func ConstructFunctionWrapper(cName string, cRetType []string, cArgTypes []strin
 				} else {
 					return "", errors.New("undefined reference type: '" + refType + "'")
 				}
+			}
+		case PTR:
+			{
+				var baseType string
+				fmt.Printf("PTR CAST: %d named %s as %s\n", i, argNames[i], cArgTypes[i])
+				if strings.HasSuffix(cArgTypes[i], "*") {
+					baseType = cArgTypes[i][0 : len(cArgTypes[i])-1]
+				} else {
+					baseType = cArgTypes[i]
+				}
+				cgoType, err := MapCTypeNameToCGo(baseType)
+				if err != nil {
+					return "", err
+				}
+				argExprs[i] = ValueCastExpression("*"+cgoType, argNames[i])
 			}
 		case OUTPTR:
 			{

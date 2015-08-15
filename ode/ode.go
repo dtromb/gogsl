@@ -17,6 +17,7 @@ type GslOdeiv2Step struct {
 
 type GslOdeiv2StepType struct {
 	gogsl.GslReference
+	cPtr uintptr
 }
 
 type GslOdeiv2Driver struct {
@@ -29,6 +30,7 @@ type GslOdeiv2Control struct {
 
 type GslOdeiv2ControlType struct {
 	gogsl.GslReference
+	cPtr uintptr
 }
 
 type GslOdeiv2Evolve struct {
@@ -142,19 +144,14 @@ func EvolveAlloc(dim int) *GslOdeiv2Evolve {
 	return _result
 }
 
-func EvolveApply(e *GslOdeiv2Evolve, con *GslOdeiv2Control, step *GslOdeiv2Step, sys *GslOdeiv2System, t1 float64, y []float64) (int32, float64, float64) {
-	var _outptr_4 C.double
-	var _outptr_6 C.double
+func EvolveApply(e *GslOdeiv2Evolve, con *GslOdeiv2Control, step *GslOdeiv2Step, sys *GslOdeiv2System, t *float64, t1 float64, h *float64, y []float64) int32 {
 	_slice_header_7 := (*reflect.SliceHeader)(unsafe.Pointer(&y))
-	_result := int32(C.gsl_odeiv2_evolve_apply((*C.gsl_odeiv2_evolve)(unsafe.Pointer(e.Ptr())), (*C.gsl_odeiv2_control)(unsafe.Pointer(con.Ptr())), (*C.gsl_odeiv2_step)(unsafe.Pointer(step.Ptr())), (*C.gsl_odeiv2_system)(unsafe.Pointer(sys.CPtr())), &_outptr_4, C.double(t1), &_outptr_6, (*C.double)(unsafe.Pointer(_slice_header_7.Data))))
-	return _result, *(*float64)(unsafe.Pointer(&_outptr_4)), *(*float64)(unsafe.Pointer(&_outptr_6))
+	return int32(C.gsl_odeiv2_evolve_apply((*C.gsl_odeiv2_evolve)(unsafe.Pointer(e.Ptr())), (*C.gsl_odeiv2_control)(unsafe.Pointer(con.Ptr())), (*C.gsl_odeiv2_step)(unsafe.Pointer(step.Ptr())), (*C.gsl_odeiv2_system)(unsafe.Pointer(sys.CPtr())), (*C.double)(t), C.double(t1), (*C.double)(h), (*C.double)(unsafe.Pointer(_slice_header_7.Data))))
 }
 
-func EvolveApplyFixedStep(e *GslOdeiv2Evolve, con *GslOdeiv2Control, step *GslOdeiv2Step, sys *GslOdeiv2System, h float64, y []float64) (int32, float64) {
-	var _outptr_4 C.double
+func EvolveApplyFixedStep(e *GslOdeiv2Evolve, con *GslOdeiv2Control, step *GslOdeiv2Step, sys *GslOdeiv2System, t *float64, h float64, y []float64) int32 {
 	_slice_header_6 := (*reflect.SliceHeader)(unsafe.Pointer(&y))
-	_result := int32(C.gsl_odeiv2_evolve_apply_fixed_step((*C.gsl_odeiv2_evolve)(unsafe.Pointer(e.Ptr())), (*C.gsl_odeiv2_control)(unsafe.Pointer(con.Ptr())), (*C.gsl_odeiv2_step)(unsafe.Pointer(step.Ptr())), (*C.gsl_odeiv2_system)(unsafe.Pointer(sys.CPtr())), &_outptr_4, C.double(h), (*C.double)(unsafe.Pointer(_slice_header_6.Data))))
-	return _result, *(*float64)(unsafe.Pointer(&_outptr_4))
+	return int32(C.gsl_odeiv2_evolve_apply_fixed_step((*C.gsl_odeiv2_evolve)(unsafe.Pointer(e.Ptr())), (*C.gsl_odeiv2_control)(unsafe.Pointer(con.Ptr())), (*C.gsl_odeiv2_step)(unsafe.Pointer(step.Ptr())), (*C.gsl_odeiv2_system)(unsafe.Pointer(sys.CPtr())), (*C.double)(t), C.double(h), (*C.double)(unsafe.Pointer(_slice_header_6.Data))))
 }
 
 func EvolveReset(e *GslOdeiv2Evolve) int32 {
@@ -210,18 +207,14 @@ func DriverSetNmax(d *GslOdeiv2Driver, nmax int) int32 {
 	return int32(C.gsl_odeiv2_driver_set_nmax((*C.gsl_odeiv2_driver)(unsafe.Pointer(d.Ptr())), C.ulong(nmax)))
 }
 
-func DriverApply(d *GslOdeiv2Driver, t1 float64, y []float64) (int32, float64) {
-	var _outptr_1 C.double
+func DriverApply(d *GslOdeiv2Driver, t *float64, t1 float64, y []float64) int32 {
 	_slice_header_3 := (*reflect.SliceHeader)(unsafe.Pointer(&y))
-	_result := int32(C.gsl_odeiv2_driver_apply((*C.gsl_odeiv2_driver)(unsafe.Pointer(d.Ptr())), &_outptr_1, C.double(t1), (*C.double)(unsafe.Pointer(_slice_header_3.Data))))
-	return _result, *(*float64)(unsafe.Pointer(&_outptr_1))
+	return int32(C.gsl_odeiv2_driver_apply((*C.gsl_odeiv2_driver)(unsafe.Pointer(d.Ptr())), (*C.double)(t), C.double(t1), (*C.double)(unsafe.Pointer(_slice_header_3.Data))))
 }
 
-func DriverApplyFixedStep(d *GslOdeiv2Driver, h float64, n int, y []float64) (int32, float64) {
-	var _outptr_1 C.double
+func DriverApplyFixedStep(d *GslOdeiv2Driver, t *float64, h float64, n int, y []float64) int32 {
 	_slice_header_4 := (*reflect.SliceHeader)(unsafe.Pointer(&y))
-	_result := int32(C.gsl_odeiv2_driver_apply_fixed_step((*C.gsl_odeiv2_driver)(unsafe.Pointer(d.Ptr())), &_outptr_1, C.double(h), C.ulong(n), (*C.double)(unsafe.Pointer(_slice_header_4.Data))))
-	return _result, *(*float64)(unsafe.Pointer(&_outptr_1))
+	return int32(C.gsl_odeiv2_driver_apply_fixed_step((*C.gsl_odeiv2_driver)(unsafe.Pointer(d.Ptr())), (*C.double)(t), C.double(h), C.ulong(n), (*C.double)(unsafe.Pointer(_slice_header_4.Data))))
 }
 
 func DriverReset(d *GslOdeiv2Driver) int32 {
