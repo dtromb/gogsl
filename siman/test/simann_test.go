@@ -2,35 +2,35 @@ package test
 
 import (
 	"fmt"
-	"math"
-	"testing" 
-	"github.com/dtromb/gogsl/siman"
 	"github.com/dtromb/gogsl/rng"
+	"github.com/dtromb/gogsl/siman"
+	"math"
+	"testing"
 )
 
 /* how many points do we try before stepping */
-var N_TRIES int = 200             
+var N_TRIES int = 200
 
 /* how many iterations for each T? */
 var ITERS_FIXED_T int = 1000
 
 /* max step size in random walk */
-var STEP_SIZE float64 = 1.0            
+var STEP_SIZE float64 = 1.0
 
 /* Boltzmann constant */
-var K float64 = 1.0                   
+var K float64 = 1.0
 
 /* initial temperature */
-var T_INITIAL float64 = 0.008         
+var T_INITIAL float64 = 0.008
 
 /* damping factor for temperature */
-var MU_T float64 = 1.003              
+var MU_T float64 = 1.003
 var T_MIN float64 = 2.0e-6
 
 /* now some functions to test in one dimension */
 func E1(params interface{}) float64 {
- 	x := *params.(*float64)
-	res := math.Exp(-math.Pow((x-1.0),2.0))*math.Sin(8*x)
+	x := *params.(*float64)
+	res := math.Exp(-math.Pow((x-1.0), 2.0)) * math.Sin(8*x)
 	//fmt.Printf("E(%f) = %g\n", x, res)
 	return res
 }
@@ -38,14 +38,14 @@ func E1(params interface{}) float64 {
 func M1(xp interface{}, yp interface{}) float64 {
 	x := *xp.(*float64)
 	y := *yp.(*float64)
-	return math.Abs(x-y)
+	return math.Abs(x - y)
 }
 
 func S1(r *rng.GslRng, xp interface{}, stepSize float64) {
 	ptr := xp.(*float64)
 	oldX := *ptr
 	u := rng.Uniform(r)
-	newX := u * 2 * stepSize - stepSize + oldX
+	newX := u*2*stepSize - stepSize + oldX
 	*ptr = newX
 }
 
@@ -55,20 +55,20 @@ func P1(xp interface{}) {
 }
 
 func TestSiman(t *testing.T) {
-	
-	params := &siman.GslSimanParams {
-		NumTries: N_TRIES,
+
+	params := &siman.GslSimanParams{
+		NumTries:   N_TRIES,
 		ItersFixed: ITERS_FIXED_T,
-		StepSize: STEP_SIZE,
-		K: K,
-		TInitial: T_INITIAL,
-		Mu: MU_T,
-		TMin: T_MIN,
+		StepSize:   STEP_SIZE,
+		K:          K,
+		TInitial:   T_INITIAL,
+		Mu:         MU_T,
+		TMin:       T_MIN,
 	}
 	siman.InitializeGslSimanParams(params)
-	
+
 	var xInitial float64 = 15.5
- 
+
 	rng.EnvSetup()
 	T := rng.DefaultRngType()
 	r := rng.RngAlloc(T)
