@@ -2096,7 +2096,7 @@ void gsl_odeiv2_driver_free (gsl_odeiv2_driver* d)
 # SECTION{"Interpolation"}
 # PACKAGE{"github.com/dtromb/gogsl/interp", ["gsl/gsl_interp.h","gsl/gsl_spline.h"],["gsl_interp","gsl"]}
 # GSL_REFTYPE{"gsl_interp",[]}
-# GSL_REFTYPE{"gsl_interp_type",[]}
+# GSL_REFTYPE{"gsl_interp_type",["cPtr uintptr"]}
 # GSL_REFTYPE{"gsl_interp_accel",[]}
 # GSL_REFTYPE{"gsl_spline",[]}
 gsl_interp * gsl_interp_alloc (const gsl_interp_type * T, size_t size)

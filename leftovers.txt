@@ -89,13 +89,7 @@ int gsl_ntuple_project (gsl_histogram * h, gsl_ntuple * ntuple, gsl_ntuple_value
 # PACKAGE{"github.com/dtomb/gogsl/siman", ["gsl/gsl_siman.h"],["gsl_siman"]}
 void gsl_siman_solve (const gsl_rng * r, void * x0_p, gsl_siman_Efunc_t Ef, gsl_siman_step_t take_step, gsl_siman_metric_t distance, gsl_siman_print_t print_position, gsl_siman_copy_t copyfunc, gsl_siman_copy_construct_t copy_constructor, gsl_siman_destroy_t destructor, size_t element_size, gsl_siman_params_t params)
 
-Interpolation Type: 
-gsl_interp_linear
-gsl_interp_polynomial
-gsl_interp_cspline
-gsl_interp_cspline_periodic
-gsl_interp_akima
-gsl_interp_akima_periodic
+
 
 double * gsl_cheb_coeffs (const gsl_cheb_series * cs)
 

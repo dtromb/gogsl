@@ -18,6 +18,7 @@ type GslInterp struct {
 
 type GslInterpType struct {
 	gogsl.GslReference
+	cPtr uintptr
 }
 
 type GslInterpAccel struct {
