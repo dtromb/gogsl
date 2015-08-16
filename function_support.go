@@ -89,3 +89,19 @@ func (gf GslFunction) CPtr() uintptr {
 func (gf GslFunctionFdf) CPtr() uintptr {
 	return ((*reflect.SliceHeader)(unsafe.Pointer(&gf.cGslFunctionStruct))).Data
 }
+
+func (f *GslFunction) Eval(x float64) float64 {
+	return f.Function(x, f.Params)
+}
+
+func (f *GslFunctionFdf) EvalF(x float64) float64 {
+	return f.Function(x, f.Params)
+}
+
+func (f *GslFunctionFdf) EvalDf(x float64) float64 {
+	return f.Derivative(x, f.Params)
+}
+
+func (f *GslFunctionFdf) Eval(x float64) (float64, float64) {
+	return f.Fdf(x, f.Params)
+}
