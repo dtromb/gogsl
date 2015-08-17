@@ -88,12 +88,6 @@ void gsl_siman_solve (const gsl_rng * r, void * x0_p, gsl_siman_Efunc_t Ef, gsl_
 double * gsl_cheb_coeffs (const gsl_cheb_series * cs)
 
 
-Solver: gsl_root_fsolver_bisection
-Solver: gsl_root_fsolver_falsepos
-Solver: gsl_root_fsolver_brent
-Derivative Solver: gsl_root_fdfsolver_newton
-Derivative Solver: gsl_root_fdfsolver_secant
-Derivative Solver: gsl_root_fdfsolver_steffenson
 
 
 

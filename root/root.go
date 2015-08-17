@@ -16,6 +16,7 @@ type GslRootFsolver struct {
 
 type GslRootFsolverType struct {
 	gogsl.GslReference
+	cPtr uintptr
 }
 
 type GslRootFdfsolver struct {
@@ -24,6 +25,7 @@ type GslRootFdfsolver struct {
 
 type GslRootFdfsolverType struct {
 	gogsl.GslReference
+	cPtr uintptr
 }
 
 func FsolverAlloc(t *GslRootFsolverType) *GslRootFsolver {

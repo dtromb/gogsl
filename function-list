@@ -2249,9 +2249,9 @@ double gsl_dht_k_sample (const gsl_dht * t, int n)
 # SECTION{"One-dimensional Root Finding"}
 # PACKAGE{"github.com/dtromb/gogsl/root", ["gsl/gsl_roots.h"],["gsl_root"]}
 # GSL_REFTYPE{"gsl_root_fsolver",[]}
-# GSL_REFTYPE{"gsl_root_fsolver_type",[]}
+# GSL_REFTYPE{"gsl_root_fsolver_type",["cPtr uintptr"]}
 # GSL_REFTYPE{"gsl_root_fdfsolver",[]}
-# GSL_REFTYPE{"gsl_root_fdfsolver_type",[]}
+# GSL_REFTYPE{"gsl_root_fdfsolver_type",["cPtr uintptr"]}
 gsl_root_fsolver * gsl_root_fsolver_alloc (const gsl_root_fsolver_type * T)
 gsl_root_fdfsolver * gsl_root_fdfsolver_alloc (const gsl_root_fdfsolver_type * T)
 int gsl_root_fsolver_set (gsl_root_fsolver * s, gsl_function * f, double x_lower, double x_upper)
