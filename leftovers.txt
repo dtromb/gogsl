@@ -56,12 +56,6 @@ size_t min_calls_per_bisection
 double alpha
 double dither
 	
-Wavelet: gsl_wavelet_daubechies
-Wavelet: gsl_wavelet_daubechies_centered
-Wavelet: gsl_wavelet_haar
-Wavelet: gsl_wavelet_haar_centered
-Wavelet: gsl_wavelet_bspline
-Wavelet: gsl_wavelet_bspline_centered
 
 const gsl_rng_type ** gsl_rng_types_setup (void)
 double * gsl_vector_ptr (gsl_vector * v, size_t i)

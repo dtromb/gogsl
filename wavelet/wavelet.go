@@ -19,6 +19,7 @@ type GslWavelet struct {
 
 type GslWaveletType struct {
 	gogsl.GslReference
+	cPtr uintptr
 }
 
 type GslWaveletWorkspace struct {

@@ -2198,7 +2198,7 @@ int gsl_sum_levin_utrunc_accel (const double * array, size_t array_size, gsl_sum
 # PACKAGE{"github.com/dtromb/gogsl/wavelet", ["gsl/gsl_wavelet.h","gsl/gsl_wavelet2d.h"],["gsl"]}
 # TYPEMAP{"gsl_wavelet_direction","GslWaveletDirection","C.gsl_wavelet_direction"}
 # GSL_REFTYPE{"gsl_wavelet",[]}
-# GSL_REFTYPE{"gsl_wavelet_type",[]}
+# GSL_REFTYPE{"gsl_wavelet_type",["cPtr uintptr"]}
 # GSL_REFTYPE{"gsl_wavelet_workspace",[]}
 gsl_wavelet * gsl_wavelet_alloc (const gsl_wavelet_type * T, size_t k)
 # NEXTMAP{"0","STRING"}
