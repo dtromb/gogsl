@@ -91,10 +91,6 @@ double * gsl_cheb_coeffs (const gsl_cheb_series * cs)
 
 
 
-Minimizer: gsl_min_fminimizer_goldensection
-Minimizer: gsl_min_fminimizer_brent
-Minimizer: gsl_min_fminimizer_quad_golden
-
 
 Derivative Solver: gsl_multiroot_fdfsolver_hybridsj
 Derivative Solver: gsl_multiroot_fdfsolver_hybridj
