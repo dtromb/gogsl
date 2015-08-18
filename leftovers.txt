@@ -88,23 +88,6 @@ void gsl_siman_solve (const gsl_rng * r, void * x0_p, gsl_siman_Efunc_t Ef, gsl_
 double * gsl_cheb_coeffs (const gsl_cheb_series * cs)
 
 
-
-
-
-
-
-
-
-Minimizer: gsl_multimin_fdfminimizer_conjugate_fr
-Minimizer: gsl_multimin_fdfminimizer_conjugate_pr
-Minimizer: gsl_multimin_fdfminimizer_vector_bfgs2
-Minimizer: gsl_multimin_fdfminimizer_vector_bfgs
-Minimizer: gsl_multimin_fdfminimizer_steepest_descent
-Minimizer: gsl_multimin_fminimizer_nmsimplex2
-Minimizer: gsl_multimin_fminimizer_nmsimplex
-Minimizer: gsl_multimin_fminimizer_nmsimplex2rand
-
-
 Robust type: gsl_multifit_robust_default
 Robust type: gsl_multifit_robust_bisquare
 Robust type: gsl_multifit_robust_cauchy

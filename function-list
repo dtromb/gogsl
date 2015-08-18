@@ -2330,9 +2330,9 @@ int gsl_multiroot_test_residual (const gsl_vector * f, double epsabs)
 # TYPEMAP{"gsl_multimin_function*","*GslMultiminFunction","*C.gsl_multimin_function","CPTR"}
 # TYPEMAP{"gsl_multimin_function_fdf*","*GslMultiminFunctionFdf","*C.gsl_multimin_function_fdf","CPTR"}
 # GSL_REFTYPE{"gsl_multimin_fminimizer",[]}
-# GSL_REFTYPE{"gsl_multimin_fminimizer_type",[]}
+# GSL_REFTYPE{"gsl_multimin_fminimizer_type",["cPtr uintptr"]}
 # GSL_REFTYPE{"gsl_multimin_fdfminimizer",[]}
-# GSL_REFTYPE{"gsl_multimin_fdfminimizer_type",[}
+# GSL_REFTYPE{"gsl_multimin_fdfminimizer_type",["cPtr uintptr"]}
 gsl_multimin_fdfminimizer * gsl_multimin_fdfminimizer_alloc (const gsl_multimin_fdfminimizer_type * T, size_t n)
 gsl_multimin_fminimizer * gsl_multimin_fminimizer_alloc (const gsl_multimin_fminimizer_type * T, size_t n)
 int gsl_multimin_fdfminimizer_set (gsl_multimin_fdfminimizer * s, gsl_multimin_function_fdf * fdf, const gsl_vector * x, double step_size, double tol)
