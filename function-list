@@ -2299,9 +2299,9 @@ int gsl_min_test_interval (double x_lower, double x_upper, double epsabs, double
 # TYPEMAP{"gsl_multiroot_function*","*GslMultirootFunction","*C.gsl_multiroot_function","CPTR"}
 # TYPEMAP{"gsl_multiroot_function_fdf*","*GslMultirootFunctionFdf","*C.gsl_multiroot_function_fdf","CPTR"}
 # GSL_REFTYPE{"gsl_multiroot_fsolver",[]}
-# GSL_REFTYPE{"gsl_multiroot_fsolver_type",[]}
+# GSL_REFTYPE{"gsl_multiroot_fsolver_type",["cPtr uintptr"]}
 # GSL_REFTYPE{"gsl_multiroot_fdfsolver",[]}
-# GSL_REFTYPE{"gsl_multiroot_fdfsolver_type",[]}
+# GSL_REFTYPE{"gsl_multiroot_fdfsolver_type",["cPtr uintptr"]}
 gsl_multiroot_fsolver * gsl_multiroot_fsolver_alloc (const gsl_multiroot_fsolver_type * T, size_t n)
 gsl_multiroot_fdfsolver * gsl_multiroot_fdfsolver_alloc (const gsl_multiroot_fdfsolver_type * T, size_t n)
 int gsl_multiroot_fsolver_set (gsl_multiroot_fsolver * s, gsl_multiroot_function * f, const gsl_vector * x)

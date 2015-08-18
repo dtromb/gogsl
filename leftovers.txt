@@ -92,14 +92,6 @@ double * gsl_cheb_coeffs (const gsl_cheb_series * cs)
 
 
 
-Derivative Solver: gsl_multiroot_fdfsolver_hybridsj
-Derivative Solver: gsl_multiroot_fdfsolver_hybridj
-Derivative Solver: gsl_multiroot_fdfsolver_newton
-Derivative Solver: gsl_multiroot_fdfsolver_gnewton
-Solver: gsl_multiroot_fsolver_hybrids
-Solver: gsl_multiroot_fsolver_hybrid
-Solver: gsl_multiroot_fsolver_dnewton
-Solver: gsl_multiroot_fsolver_broyden
 
 
 
