@@ -11,14 +11,16 @@ import "C"
 import "github.com/dtromb/gogsl/sf"
 import "unsafe"
 
+
 func Dilog(x float64) float64 {
-	return float64(C.gsl_sf_dilog(C.double(x)))
+   return float64(C.gsl_sf_dilog(C.double(x)))
 }
 
 func DilogE(x float64, result *sf.GslSfResult) int32 {
-	return int32(C.gsl_sf_dilog_e(C.double(x), (*C.gsl_sf_result)(unsafe.Pointer(result.Ptr()))))
+   return int32(C.gsl_sf_dilog_e(C.double(x), (*C.gsl_sf_result)(unsafe.Pointer(result.Ptr()))))
 }
 
 func ComplexDilogE(r float64, theta float64, resultRe *sf.GslSfResult, resultIm *sf.GslSfResult) int32 {
-	return int32(C.gsl_sf_complex_dilog_e(C.double(r), C.double(theta), (*C.gsl_sf_result)(unsafe.Pointer(resultRe.Ptr())), (*C.gsl_sf_result)(unsafe.Pointer(resultIm.Ptr()))))
+   return int32(C.gsl_sf_complex_dilog_e(C.double(r), C.double(theta), (*C.gsl_sf_result)(unsafe.Pointer(resultRe.Ptr())), (*C.gsl_sf_result)(unsafe.Pointer(resultIm.Ptr()))))
 }
+

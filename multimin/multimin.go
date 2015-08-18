@@ -17,6 +17,7 @@ type GslMultiminFminimizer struct {
 
 type GslMultiminFminimizerType struct {
 	gogsl.GslReference
+	cPtr uintptr
 }
 
 type GslMultiminFdfminimizer struct {
@@ -25,6 +26,7 @@ type GslMultiminFdfminimizer struct {
 
 type GslMultiminFdfminimizerType struct {
 	gogsl.GslReference
+	cPtr uintptr
 }
 
 func FdfminimizerAlloc(t *GslMultiminFdfminimizerType, n int) *GslMultiminFdfminimizer {
