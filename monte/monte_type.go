@@ -8,6 +8,7 @@ package monte
 import "C"
 
 import (
+	"os"
 	"reflect"
 	"unsafe"
 )
@@ -21,6 +22,31 @@ type GslMonteFunction struct {
 	Params             interface{}
 	Dim                int
 	cGslFunctionStruct []byte
+}
+
+type GslMonteVegasMode int32
+
+const (
+	GSL_VEGAS_MODE_IMPORTANCE      GslMonteVegasMode = 1
+	GSL_VEGAS_MODE_IMPORTANCE_ONLY GslMonteVegasMode = -1
+	GSL_VEGAS_MODE_STRATIFIED      GslMonteVegasMode = 0
+)
+
+type GslMonteVegasParams struct {
+	Alpha      float64
+	Iterations int
+	Stage      int
+	Mode       GslMonteVegasMode
+	Verbose    int
+	Ostream    *os.File
+}
+
+type GslMonteMiserParams struct {
+	EstimateFrac         float64
+	MinCalls             int
+	MinCallsPerBisection int
+	Alpha                float64
+	Dither               float64
 }
 
 //export gslMonteFunctionCaller

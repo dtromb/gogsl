@@ -1,20 +1,5 @@
 Reminder list of functions and API items that have not been addressed yet.
 
-gsl_monte_vegas_params:
-double alpha
-size_t iterations
-int stage
-int mode
-int verbose
-FILE * ostream
-
-gsl_monte_miser_params:
-double estimate_frac
-size_t min_calls
-size_t min_calls_per_bisection
-double alpha
-double dither
-	
 const gsl_rng_type ** gsl_rng_types_setup (void)
 
 // These need to be done for all types (Data_(), Length(), Stride())
