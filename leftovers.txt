@@ -1,8 +1,5 @@
 Reminder list of functions and API items that have not been addressed yet.
 
-size_t * gsl_combination_data (const gsl_combination * c)
-size_t * gsl_multiset_data (const gsl_multiset * c)
-
 double * gsl_cheb_coeffs (const gsl_cheb_series * cs)
 
 gsl_multifit_robust_stats gsl_multifit_robust_statistics (const gsl_multifit_robust_workspace * w)
