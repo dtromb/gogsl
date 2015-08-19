@@ -68,8 +68,24 @@ import "C"
 
 import (
 	"github.com/dtromb/gogsl"
+	"reflect"
 	"unsafe"
 )
+
+func (v *GslVector) Length() int {
+	return int(C.get_gsl_vector_length((*C.gsl_vector)(unsafe.Pointer(v.Ptr()))))
+}
+
+func (v *GslVector) Stride() int {
+	return int(C.get_gsl_vector_stride((*C.gsl_vector)(unsafe.Pointer(v.Ptr()))))
+}
+
+func (v *GslVector) Data_() []float64 {
+	l := v.Length()
+	cptr := C.get_gsl_vector_data((*C.gsl_vector)(unsafe.Pointer(v.Ptr())))
+	hdr := &reflect.SliceHeader{Len: l, Cap: l, Data: uintptr(cptr)}
+	return *(*[]float64)(unsafe.Pointer(hdr))
+}
 
 // XXX - Do vector accessors for all the types.
 func (gvv *GslVectorView) Dispose() {
