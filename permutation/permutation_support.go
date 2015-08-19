@@ -2,6 +2,7 @@ package permutation
 
 /*
 	#include <gsl/gsl_permutation.h>
+	#include <gsl/gsl_permute_double.h>
 
 	size_t get_permutation_size(gsl_permutation *p) {
 		return p->size;
@@ -20,6 +21,24 @@ import (
 	"reflect"
 	"unsafe"
 )
+
+// We make a decisive judgement call here and break the mapping - replacing size_t *
+// with a permutation object.  It's difficult to get a []C.size_t in Go and easy to
+// get a permutation object.
+
+//int gsl_permute (const size_t * p, double * data, size_t stride, size_t n)
+func Permute(p *GslPermutation, data []float64, stride int, n int) {
+	C.gsl_permute((*C.size_t)(C.get_permutation_data((*C.gsl_permutation)(unsafe.Pointer(p.Ptr())))),
+		(*C.double)(unsafe.Pointer((*reflect.SliceHeader)(unsafe.Pointer(&data)).Data)),
+		C.size_t(stride), C.size_t(n))
+}
+
+//int gsl_permute_inverse (const size_t * p, double * data, size_t stride, size_t n)
+func PermuteInverse(p *GslPermutation, data []float64, stride int, n int) {
+	C.gsl_permute_inverse((*C.size_t)(C.get_permutation_data((*C.gsl_permutation)(unsafe.Pointer(p.Ptr())))),
+		(*C.double)(unsafe.Pointer((*reflect.SliceHeader)(unsafe.Pointer(&data)).Data)),
+		C.size_t(stride), C.size_t(n))
+}
 
 func (p *GslPermutation) Len() int {
 	return int(C.get_permutation_size((*C.gsl_permutation)(unsafe.Pointer(p.Ptr()))))

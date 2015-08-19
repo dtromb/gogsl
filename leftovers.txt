@@ -1,13 +1,5 @@
 Reminder list of functions and API items that have not been addressed yet.
 
-// These need to be done for all types (Data_(), Length(), Stride())
-double * gsl_vector_ptr (gsl_vector * v, size_t i)
-const double * gsl_vector_const_ptr (const gsl_vector * v, size_t i)
-
-size_t * gsl_permutation_data (const gsl_permutation * p)
-int gsl_permute (const size_t * p, double * data, size_t stride, size_t n)
-int gsl_permute_inverse (const size_t * p, double * data, size_t stride, size_t n)
-
 size_t * gsl_combination_data (const gsl_combination * c)
 size_t * gsl_multiset_data (const gsl_multiset * c)
 
