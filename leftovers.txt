@@ -87,15 +87,6 @@ void gsl_siman_solve (const gsl_rng * r, void * x0_p, gsl_siman_Efunc_t Ef, gsl_
 
 double * gsl_cheb_coeffs (const gsl_cheb_series * cs)
 
-
-Robust type: gsl_multifit_robust_default
-Robust type: gsl_multifit_robust_bisquare
-Robust type: gsl_multifit_robust_cauchy
-Robust type: gsl_multifit_robust_fair
-Robust type: gsl_multifit_robust_huber
-Robust type: gsl_multifit_robust_ols
-Robust type: gsl_multifit_robust_welsch
-
 gsl_multifit_robust_stats gsl_multifit_robust_statistics (const gsl_multifit_robust_workspace * w)
 
 GSL_CONST_MKSA_SPEED_OF_LIGHT
@@ -449,8 +440,6 @@ GSL_CONST_NUM_YOCTO
 
 
 
-Derivative Solver: gsl_multifit_fdfsolver_lmsder
-Derivative Solver: gsl_multifit_fdfsolver_lmder
 
 
 
