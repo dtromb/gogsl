@@ -1,1 +1,0 @@
-Reminder list of functions and API items that have not been addressed yet.
