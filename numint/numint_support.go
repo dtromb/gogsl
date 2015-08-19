@@ -8,6 +8,10 @@ package numint
 		return w->size;
 	}
 
+	int get_qawo_enum_constant(enum gsl_integration_qawo_enum val) {
+		return (int)val;
+	}
+
 */
 import "C"
 
@@ -23,6 +27,9 @@ const (
 	GSL_INTEG_GAUSS51 IntegrationRule = 5
 	GSL_INTEG_GAUSS61 IntegrationRule = 6
 )
+
+var GSL_INTEG_COSINE GslIntegrationQawoEnum = GslIntegrationQawoEnum(int32(C.get_qawo_enum_constant(C.GSL_INTEG_COSINE)))
+var GSL_INTEG_SINE GslIntegrationQawoEnum = GslIntegrationQawoEnum(int32(C.get_qawo_enum_constant(C.GSL_INTEG_SINE)))
 
 func (w *GslIntegrationWorkspace) IntervalCount() int32 {
 	return int32(C.get_integration_workspace_interval_count((*C.gsl_integration_workspace)(unsafe.Pointer(w.Ptr()))))

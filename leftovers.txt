@@ -1,9 +1,5 @@
 Reminder list of functions and API items that have not been addressed yet.
 
-
-GSL_INTEG_COSINE
-GSL_INTEG_SINE
-
 gsl_monte_vegas_params:
 double alpha
 size_t iterations
