@@ -37,6 +37,21 @@ type GslMultifitFunctionFdf struct {
 	cGslFunctionStruct []byte
 }
 
+type GslMultifitRobustStatistics struct {
+	SigmaOls float64
+	SigmaMad float64
+	SigmaRob float64
+	Sigma    float64
+	Rsq      float64
+	AdjRsq   float64
+	Rmse     float64
+	Sse      float64
+	Dof      int
+	Numit    int
+	Weights  *vector.GslVector
+	R        *vector.GslVector
+}
+
 //export gslMultifitFunctionCaller
 func gslMultifitFunctionCaller(x uintptr, cFunParamPtr uintptr, f uintptr) int {
 	xVect := &vector.GslVector{}

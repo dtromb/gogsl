@@ -78,6 +78,26 @@ package multifit
 		return sizeof(gsl_multifit_function_fdf);
 	}
 
+	void get_robust_statistics(const gsl_multifit_robust_workspace * w,
+								double *sigma_ols, double *sigma_mad, double *sigma_rob, double *sigma,
+								double *rsq, double *adj_rsq, double *rmse, double *sse,
+								size_t *dof, size_t *numit, gsl_vector **weights, gsl_vector **R) {
+		gsl_multifit_robust_stats rv;
+		rv = gsl_multifit_robust_statistics(w);
+		*sigma_ols = rv.sigma_ols;
+		*sigma_mad = rv.sigma_mad;
+		*sigma_rob = rv.sigma_rob;
+		*sigma = rv.sigma;
+		*rsq = rv.Rsq;
+		*adj_rsq = rv.adj_Rsq;
+		*rmse = rv.rmse;
+		*sse = rv.sse;
+		*dof = rv.dof;
+		*numit = rv.numit;
+		*weights = rv.weights;
+		*R = rv.r;
+	}
+
 */
 import "C"
 
@@ -102,6 +122,30 @@ var GSL_MULTIFIT_ROBUST_WELSCH *GslMultifitRobustType = &GslMultifitRobustType{c
 
 var GSL_MULTIFIT_FDFSOLVER_LMSDER *GslMultifitFdfsolverType = &GslMultifitFdfsolverType{cPtr: uintptr(unsafe.Pointer(C.gsl_multifit_fdfsolver_lmsder))}
 var GSL_MULTIFIT_FDFSOLVER_LMDER *GslMultifitFdfsolverType = &GslMultifitFdfsolverType{cPtr: uintptr(unsafe.Pointer(C.gsl_multifit_fdfsolver_lmder))}
+
+//gsl_multifit_robust_stats gsl_multifit_robust_statistics (const gsl_multifit_robust_workspace * w)
+func RobustStatistics(rw *GslMultifitRobustWorkspace) *GslMultifitRobustStatistics {
+	var dof C.size_t
+	var numit C.size_t
+	var weightsPtr *C.gsl_vector
+	var rPtr *C.gsl_vector
+	res := &GslMultifitRobustStatistics{}
+	C.get_robust_statistics((*C.gsl_multifit_robust_workspace)(unsafe.Pointer(rw.Ptr())),
+		(*C.double)(&res.SigmaOls), (*C.double)(&res.SigmaMad), (*C.double)(&res.SigmaRob), (*C.double)(&res.Sigma),
+		(*C.double)(&res.Rsq), (*C.double)(&res.AdjRsq), (*C.double)(&res.Rmse), (*C.double)(&res.Sse),
+		&dof, &numit, &weightsPtr, &rPtr)
+	res.Dof = int(dof)
+	res.Numit = int(numit)
+	weights := &vector.GslVector{}
+	gogsl.InitializeGslStruct(weights, uintptr(unsafe.Pointer(weightsPtr)))
+	r := &vector.GslVector{}
+	gogsl.InitializeGslStruct(r, uintptr(unsafe.Pointer(rPtr)))
+	res.Weights = vector.VectorAlloc(weights.Length())
+	res.R = vector.VectorAlloc(r.Length())
+	vector.Memcpy(res.Weights, weights)
+	vector.Memcpy(res.R, r)
+	return res
+}
 
 func InitializeGslMultifitFunction(ptr *GslMultifitFunction) {
 	ptr.cGslFunctionStruct = make([]byte, 0, global_GSL_MULTIFIT_FUNCTION_STRUCT_SIZE)
