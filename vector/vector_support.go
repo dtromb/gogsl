@@ -87,7 +87,6 @@ func (v *GslVector) Data_() []float64 {
 	return *(*[]float64)(unsafe.Pointer(hdr))
 }
 
-// XXX - Do vector accessors for all the types.
 func (gvv *GslVectorView) Dispose() {
 }
 func (vv *GslVectorView) Vector() *GslVector {
