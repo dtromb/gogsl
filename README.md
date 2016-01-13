@@ -54,5 +54,5 @@ These limitations exist because of the reasonable (in C, anyway) assumption on t
 
 The code is made available under the version 2 GNU Public License (Copyleft).  If you use it, you must release your source with your product and follow certain other restrictions.   See the `LICENSE` file in the distribution for details.
 
-To say hello, or for a non-copyleft license, please contact me at <dave.trombley@gmail.com>.   I'd love to know who you are and what you're using gogsl for!
+To say hello, or if you have any questions (please report issues on github) <dave.trombley@gmail.com>.   I'd love to know who you are and what you're using gogsl for!
 
